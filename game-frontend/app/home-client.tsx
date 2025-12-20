@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AppConfig, UserSession, authenticate, openContractCall } from "@stacks/connect";
 import { createNetwork, type StacksNetworkName } from "@stacks/network";
 import {
@@ -178,10 +178,10 @@ function PageSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-3xl border border-[#1f253512] bg-white/90 p-6 shadow-[0_30px_60px_-50px_rgba(16,19,31,0.6)] backdrop-blur">
+    <section className="rounded-3xl border border-[#1f253512] bg-white/90 p-4 shadow-[0_30px_60px_-50px_rgba(16,19,31,0.6)] backdrop-blur sm:p-6">
       <div className="mb-5 flex flex-col gap-1">
-        <h2 className="text-2xl font-semibold text-[#10131f]">{title}</h2>
-        <p className="text-sm text-[#3a4156]">{subtitle}</p>
+        <h2 className="text-xl font-semibold text-[#10131f] sm:text-2xl">{title}</h2>
+        <p className="text-sm text-[#3a4156] sm:text-base">{subtitle}</p>
       </div>
       {children}
     </section>
@@ -205,7 +205,7 @@ function Field({
     <label className="flex flex-col gap-2 text-sm font-medium text-[#10131f]">
       <span>{label}</span>
       <input
-        className="h-11 rounded-2xl border border-[#1f253512] bg-white px-4 text-sm text-[#10131f] shadow-sm outline-none transition focus:border-[#ff6b4a]"
+        className="h-10 rounded-2xl border border-[#1f253512] bg-white px-4 text-sm text-[#10131f] shadow-sm outline-none transition focus:border-[#ff6b4a] sm:h-11"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
@@ -230,7 +230,7 @@ function SelectField({
     <label className="flex flex-col gap-2 text-sm font-medium text-[#10131f]">
       <span>{label}</span>
       <select
-        className="h-11 rounded-2xl border border-[#1f253512] bg-white px-4 text-sm text-[#10131f] shadow-sm outline-none transition focus:border-[#ff6b4a]"
+        className="h-10 rounded-2xl border border-[#1f253512] bg-white px-4 text-sm text-[#10131f] shadow-sm outline-none transition focus:border-[#ff6b4a] sm:h-11"
         value={value}
         onChange={(event) => onChange(event.target.value)}
       >
@@ -254,7 +254,7 @@ function ActionButton({
   tone?: "primary" | "secondary";
 }) {
   const base =
-    "inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-semibold transition";
+    "inline-flex h-10 items-center justify-center rounded-full px-4 text-sm font-semibold transition sm:h-11 sm:px-5";
   const styles =
     tone === "primary"
       ? "bg-[#ff6b4a] text-white shadow-[0_12px_30px_-20px_rgba(255,107,74,0.9)] hover:bg-[#ff5b35]"
@@ -269,6 +269,7 @@ function ActionButton({
 export default function Home() {
   const [networkName, setNetworkName] = useState<NetworkKey>(DEFAULT_NETWORK as NetworkKey);
   const [status, setStatus] = useState({ tone: "info", message: "Connect a wallet to begin." });
+  const [lastTxId, setLastTxId] = useState<string | null>(null);
   const [readOnlyResult, setReadOnlyResult] = useState<string>("");
   const [activeGame, setActiveGame] = useState("all");
 
@@ -333,6 +334,18 @@ export default function Home() {
 
   const senderAddress = stxAddress || contracts.deployer;
 
+  const resolveContractAddress = (contract: ContractMeta) => contract.address || stxAddress || "";
+
+  const txExplorerUrl = (txId: string) => {
+    const chain = networkName === "testnet" ? "?chain=testnet" : "";
+    return `https://explorer.hiro.so/txid/${txId}${chain}`;
+  };
+
+  const networkWarning =
+    signedIn && !stxAddress
+      ? `Wallet connected, but no ${networkName} address is available. Switch your wallet network, then reconnect.`
+      : null;
+
   const setStatusMessage = (tone: "info" | "error" | "success", message: string) => {
     setStatus({ tone, message });
   };
@@ -343,6 +356,15 @@ export default function Home() {
       userSession,
       onFinish: () => setStatusMessage("success", "Wallet connected."),
       onCancel: () => setStatusMessage("info", "Connection cancelled."),
+    });
+  };
+
+  const handleReconnect = () => {
+    authenticate({
+      appDetails,
+      userSession,
+      onFinish: () => setStatusMessage("success", "Wallet reconnected."),
+      onCancel: () => setStatusMessage("info", "Reconnect cancelled."),
     });
   };
 
@@ -357,11 +379,17 @@ export default function Home() {
       return false;
     }
     if (!stxAddress) {
-      setStatusMessage("error", "No Stacks address available for this network.");
+      setStatusMessage(
+        "error",
+        `Wallet is on the wrong network. Switch to ${networkName} in your wallet and reconnect.`
+      );
       return false;
     }
-    if (!contract.address) {
-      setStatusMessage("error", "Missing contract address. Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS.");
+    if (!resolveContractAddress(contract)) {
+      setStatusMessage(
+        "error",
+        "Missing contract address. Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS or connect with the deployer wallet."
+      );
       return false;
     }
     return true;
@@ -369,16 +397,21 @@ export default function Home() {
 
   const runContractCall = (contract: ContractMeta, functionName: string, functionArgs: any[]) => {
     if (!assertReady(contract)) return;
+    const contractAddress = resolveContractAddress(contract);
     setStatusMessage("info", "Transaction submitted to wallet.");
+    setLastTxId(null);
     openContractCall({
-      contractAddress: contract.address,
+      contractAddress,
       contractName: contract.name,
       functionName,
       functionArgs,
       network,
       anchorMode: AnchorMode.Any,
       postConditionMode: PostConditionMode.Allow,
-      onFinish: (data) => setStatusMessage("success", `Broadcasted: ${data.txId}`),
+      onFinish: (data) => {
+        setLastTxId(data.txId);
+        setStatusMessage("success", "Transaction broadcasted.");
+      },
       onCancel: () => setStatusMessage("info", "Transaction cancelled."),
     });
   };
@@ -388,17 +421,21 @@ export default function Home() {
     functionName: string,
     functionArgs: any[]
   ) => {
-    if (!contract.address) {
-      setStatusMessage("error", "Missing contract address. Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS.");
+    const contractAddress = resolveContractAddress(contract);
+    if (!contractAddress) {
+      setStatusMessage(
+        "error",
+        "Missing contract address. Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS or connect with the deployer wallet."
+      );
       return;
     }
     try {
       const response = await fetchCallReadOnlyFunction({
-        contractAddress: contract.address,
+        contractAddress,
         contractName: contract.name,
         functionName,
         functionArgs,
-        senderAddress: senderAddress || contract.address,
+        senderAddress: senderAddress || contractAddress,
         network,
       });
       setReadOnlyResult(JSON.stringify(cvToJSON(response), null, 2));
@@ -443,23 +480,31 @@ export default function Home() {
 
   const shouldShow = (id: string) => activeGame === "all" || activeGame === id;
 
+  useEffect(() => {
+    if (networkWarning) {
+      setStatusMessage("info", `Select ${networkName} in your wallet, then reconnect.`);
+    }
+  }, [networkWarning, networkName]);
+
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#ffffff,transparent_45%),radial-gradient(circle_at_20%_60%,#ffe9dc,transparent_55%),radial-gradient(circle_at_80%_10%,#e4f7f3,transparent_40%)] px-6 pb-16 pt-10 text-[#10131f]">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#ffffff,transparent_45%),radial-gradient(circle_at_20%_60%,#ffe9dc,transparent_55%),radial-gradient(circle_at_80%_10%,#e4f7f3,transparent_40%)] px-4 pb-16 pt-8 text-[#10131f] sm:px-6 sm:pt-10 lg:px-10">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 sm:gap-10">
         <div className="flex flex-col gap-3">
           <p className="text-xs uppercase tracking-[0.4em] text-[#3a4156]">Stacks Arcade</p>
-          <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-4 sm:items-end">
             <div>
-              <h1 className="text-4xl font-semibold leading-tight">Pick a game. Bring the fun.</h1>
-              <p className="mt-2 max-w-2xl text-sm text-[#3a4156]">
+              <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+                Pick a game. Bring the fun.
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm text-[#3a4156] sm:text-base">
                 A playful control room for every Stacks mini-game. Choose a title on the left,
                 connect your wallet, and launch into testnet or mainnet in a few clicks.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex rounded-full border border-[#1f253512] bg-white p-1 text-sm">
+            <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
+              <div className="flex w-full rounded-full border border-[#1f253512] bg-white p-1 text-sm sm:w-auto">
                 <button
-                  className={`rounded-full px-4 py-2 transition ${
+                  className={`flex-1 rounded-full px-4 py-2 transition sm:flex-none ${
                     networkName === "testnet"
                       ? "bg-[#10131f] text-white"
                       : "text-[#3a4156] hover:text-[#10131f]"
@@ -470,7 +515,7 @@ export default function Home() {
                   Testnet
                 </button>
                 <button
-                  className={`rounded-full px-4 py-2 transition ${
+                  className={`flex-1 rounded-full px-4 py-2 transition sm:flex-none ${
                     networkName === "mainnet"
                       ? "bg-[#10131f] text-white"
                       : "text-[#3a4156] hover:text-[#10131f]"
@@ -483,7 +528,7 @@ export default function Home() {
               </div>
               {signedIn ? (
                 <>
-                  <span className="rounded-full border border-[#1f253512] bg-white px-4 py-2 text-sm font-medium">
+                  <span className="w-full max-w-[220px] truncate rounded-full border border-[#1f253512] bg-white px-4 py-2 text-sm font-medium sm:w-auto sm:max-w-none">
                     {stxAddress ?? "No address"}
                   </span>
                   <ActionButton label="Sign out" onClick={handleSignOut} tone="secondary" />
@@ -495,25 +540,70 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid gap-6 rounded-3xl border border-[#1f253512] bg-white/80 px-6 py-4 text-sm text-[#3a4156] shadow-[0_30px_60px_-50px_rgba(16,19,31,0.6)] backdrop-blur md:grid-cols-3">
+        <div className="grid gap-4 rounded-3xl border border-[#1f253512] bg-white/80 px-4 py-4 text-sm text-[#3a4156] shadow-[0_30px_60px_-50px_rgba(16,19,31,0.6)] backdrop-blur sm:px-6 md:grid-cols-3">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">Network</p>
             <p className="mt-1 font-medium text-[#10131f]">{networkName}</p>
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">Deployer</p>
-            <p className="mt-1 font-medium text-[#10131f]">
+            <p className="mt-1 break-all font-medium text-[#10131f]">
               {contracts.deployer || "Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS"}
             </p>
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">Status</p>
             <p className="mt-1 font-medium text-[#10131f]">{status.message}</p>
+            {networkWarning ? (
+              <div className="mt-2 flex flex-col gap-2">
+                <p className="rounded-2xl border border-[#ffb365]/30 bg-[#fff4e6] px-3 py-2 text-xs font-medium text-[#7a3c00]">
+                  {networkWarning}
+                </p>
+                <div>
+                  <ActionButton label="Reconnect wallet" onClick={handleReconnect} tone="secondary" />
+                </div>
+              </div>
+            ) : null}
+            {lastTxId ? (
+              <a
+                className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-[#ff6b4a] hover:text-[#10131f]"
+                href={txExplorerUrl(lastTxId)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View tx
+                <span className="max-w-[220px] truncate text-[#3a4156]">({lastTxId})</span>
+              </a>
+            ) : null}
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-          <aside className="h-fit rounded-3xl border border-[#1f253512] bg-white/90 p-5 shadow-[0_25px_50px_-45px_rgba(16,19,31,0.6)] backdrop-blur lg:sticky lg:top-6">
+        <div className="grid gap-4 rounded-3xl border border-[#1f253512] bg-white/90 px-4 py-5 text-sm text-[#3a4156] shadow-[0_30px_60px_-50px_rgba(16,19,31,0.6)] backdrop-blur sm:px-6 md:grid-cols-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">How to start</p>
+            <p className="mt-2">
+              Connect a wallet, pick a network, then choose a game from the sidebar. Use the
+              quick actions (create, join, reveal) to play.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">How to play</p>
+            <p className="mt-2">
+              Most games are commit‑reveal. Generate a secret, create a commit, then reveal it
+              to finish the round. Match the other player’s move or the random outcome.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">Need help?</p>
+            <p className="mt-2">
+              Watch the status bar for transaction updates. The latest tx link appears after
+              every broadcast so you can track confirmations.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+          <aside className="h-fit rounded-3xl border border-[#1f253512] bg-white/90 p-4 shadow-[0_25px_50px_-45px_rgba(16,19,31,0.6)] backdrop-blur sm:p-5 lg:sticky lg:top-8">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.35em] text-[#3a4156]">Game Menu</p>
