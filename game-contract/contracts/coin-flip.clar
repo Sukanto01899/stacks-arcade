@@ -50,6 +50,25 @@
   }
 )
 
+;; events
+(define-events
+  ;; Game creation
+  (event (game-created (game-id uint) (player principal) (wager uint) (commit (buff 32))))
+  
+  ;; Game reveal and result
+  (event (game-revealed (game-id uint) (player principal) (pick uint) (result uint) (winner bool) (payout uint)))
+  
+  ;; Game expiration (when not revealed in time)
+  (event (game-expired (game-id uint) (recipient principal) (refund-amount uint)))
+  
+  ;; Admin actions
+  (event (admin-set (admin principal)))
+  (event (admin-locked ())
+  (event (contract-paused ())
+  (event (contract-unpaused ())
+  (event (treasury-withdrawn (amount uint) (admin principal))
+)
+
 ;; private helpers
 ;; transfer STX out of the contract
 (define-private (transfer-from-contract (amount uint) (recipient principal))
@@ -93,24 +112,28 @@
     (unwrap! (assert-admin) err-not-admin)
     (asserts! (not (var-get admin-locked)) err-admin-locked)
     (var-set admin (some new-admin))
+    (emit-event (admin-set new-admin))
     (ok true)))
 
 (define-public (lock-admin)
   (begin
     (unwrap! (assert-admin) err-not-admin)
     (var-set admin-locked true)
+    (emit-event (admin-locked))
     (ok true)))
 
 (define-public (pause)
   (begin
     (unwrap! (assert-admin) err-not-admin)
     (var-set paused true)
+     (emit-event (contract-paused))
     (ok true)))
 
 (define-public (unpause)
   (begin
     (unwrap! (assert-admin) err-not-admin)
     (var-set paused false)
+     (emit-event (contract-unpaused))
     (ok true)))
 
 (define-public (treasury-withdraw (amount uint))
@@ -120,6 +143,7 @@
       (asserts! (>= balance amount) err-insufficient-treasury))
     (let ((recipient tx-sender))
       (unwrap! (transfer-from-contract amount recipient) err-transfer))
+      (emit-event (treasury-withdrawn amount tx-sender))
     (ok true)))
 
 ;; public functions
@@ -147,6 +171,7 @@
             winner: false
           })
         (var-set next-game-id (+ game-id u1))
+        (emit-event (game-created game-id tx-sender wager commit))
         (ok game-id)))))
 
 (define-public (reveal (game-id uint) (pick uint) (secret (buff 32)))
@@ -179,6 +204,7 @@
                   (unwrap! (transfer-from-contract payout (get player game)) err-transfer))
                 true)
               (map-set games {id: game-id} (merge game {status: status-settled, result: (some result), winner: winner}))
+              (emit-event (game-revealed game-id tx-sender pick result winner payout))
               (ok {result: result, winner: winner, payout: payout}))))))))
 
 (define-public (expire-game (game-id uint))
@@ -194,6 +220,7 @@
         (begin
           (unwrap! (transfer-from-contract wager recipient) err-transfer)
           (map-set games {id: game-id} (merge game {status: status-expired}))
+           (emit-event (game-expired game-id recipient wager))
           (ok true))))))
 
 ;; read only functions
