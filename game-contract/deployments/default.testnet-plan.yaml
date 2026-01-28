@@ -10,70 +10,70 @@ plan:
       transactions:
         - contract-publish:
             contract-name: coin-flip
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 70010
             path: "contracts\\coin-flip.clar"
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: emoji-battle
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 92110
             path: "contracts\\emoji-battle.clar"
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: guess-the-number
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 72930
             path: "contracts\\guess-the-number.clar"
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: higher-lower
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 78610
             path: "contracts\\higher-lower.clar"
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: hot-potato
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 53550
             path: "contracts\\hot-potato.clar"
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: lottery-demo
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 58650
             path: "contracts\\lottery-demo.clar"
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: rock-paper-scissors
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 92160
             path: "contracts\\rock-paper-scissors.clar"
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: scoreboard
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 25220
             path: "contracts\\scoreboard.clar"
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: tic-tac-toe
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 70340
             path: "contracts\\tic-tac-toe.clar"
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: todo-list
-            expected-sender: ST1G4ZDXED8XM2XJ4Q4GJ7F4PG4EJQ1KKXVPSAX13
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
             cost: 31900
             path: "contracts\\todo-list.clar"
             anchor-block-only: true
