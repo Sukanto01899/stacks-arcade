@@ -1,4 +1,4 @@
-;; title: hot-potato
+;; title: hot-potato-v2
 ;; version: 1.0.0
 ;; summary: Timed pot game where the last holder before timeout wins the pot.
 ;; clarity: 4

@@ -1,26 +1,26 @@
-;; title: emoji-battle
+;; title: rock-paper-scissors-v2
 ;; version: 1.0.0
-;; summary: Two-player emoji battle with commit-reveal and escrowed stakes.
+;; summary: Two-player RPS with commit-reveal and escrowed stakes.
 ;; clarity: 4
 
 ;; constants
 (define-constant contract-version "1.0.0")
-(define-constant min-stake u1000000) ;; 0.01 STX
-(define-constant max-stake u100000000) ;; 1 STX
+(define-constant min-stake u1000000)
+(define-constant max-stake u100000000)
 (define-constant reveal-window u144)
 (define-constant status-open u0)
 (define-constant status-locked u1)
 (define-constant status-settled u2)
 (define-constant status-expired u3)
-(define-constant emoji-fire u0)
-(define-constant emoji-water u1)
-(define-constant emoji-leaf u2)
+(define-constant choice-rock u0)
+(define-constant choice-paper u1)
+(define-constant choice-scissors u2)
 (define-constant err-not-admin (err u900))
 (define-constant err-admin-unset (err u901))
 (define-constant err-admin-set (err u902))
 (define-constant err-paused (err u903))
 (define-constant err-admin-locked (err u904))
-(define-constant err-invalid-emoji (err u400))
+(define-constant err-invalid-choice (err u400))
 (define-constant err-stake-low (err u401))
 (define-constant err-stake-high (err u402))
 (define-constant err-not-open (err u403))
@@ -70,18 +70,17 @@
 (define-private (assert-not-paused)
   (if (var-get paused) err-paused (ok true)))
 
-(define-private (emoji-byte (choice uint))
-  (if (is-eq choice emoji-fire)
-      0x00
-      (if (is-eq choice emoji-water) 0x01 0x02)))
+(define-private (choice-byte (choice uint))
+  (if (is-eq choice choice-rock) 0x00
+      (if (is-eq choice choice-paper) 0x01 0x02)))
 
 (define-private (commit-hash (secret (buff 32)) (choice uint))
-  (sha256 (concat secret (emoji-byte choice))))
+  (sha256 (concat secret (choice-byte choice))))
 
 (define-private (beats? (a uint) (b uint))
-  (or (and (is-eq a emoji-fire) (is-eq b emoji-leaf))
-      (and (is-eq a emoji-leaf) (is-eq b emoji-water))
-      (and (is-eq a emoji-water) (is-eq b emoji-fire))))
+  (or (and (is-eq a choice-rock) (is-eq b choice-scissors))
+      (and (is-eq a choice-scissors) (is-eq b choice-paper))
+      (and (is-eq a choice-paper) (is-eq b choice-rock))))
 
 (define-private (resolve (a uint) (b uint))
   (if (is-eq a b) u0 (if (beats? a b) u1 u2)))
@@ -164,7 +163,7 @@
   (let ((game (unwrap! (map-get? games {id: game-id}) err-not-found)))
     (begin
       (unwrap! (assert-not-paused) err-paused)
-      (asserts! (or (is-eq choice emoji-fire) (is-eq choice emoji-water) (is-eq choice emoji-leaf)) err-invalid-emoji)
+      (asserts! (or (is-eq choice choice-rock) (is-eq choice choice-paper) (is-eq choice choice-scissors)) err-invalid-choice)
       (asserts! (is-eq (get status game) status-locked) err-not-open)
       (let
         (

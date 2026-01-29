@@ -1,6 +1,6 @@
-;; title: cosmetics
+;; title: cosmetics-v2
 ;; version: 1.0.0
-;; summary: NFT cosmetics with limited drops tied to achievements.
+;; summary: NFT cosmetics-v2 with limited drops tied to achievements.
 ;; clarity: 4
 
 ;; constants
@@ -29,6 +29,15 @@
 (define-constant err-not-owner (err u708))
 (define-constant err-insufficient-balance (err u709))
 (define-constant err-token-not-found (err u710))
+(define-constant err-mint-failed (err u711))
+(define-constant err-transfer-failed (err u712))
+(define-constant err-signer-unset (err u713))
+(define-constant err-invalid-signature (err u714))
+(define-constant err-permit-used (err u715))
+
+;; sip-009
+(impl-trait .sip009-nft-trait-v2.sip009-nft-trait)
+(define-non-fungible-token cosmetic uint)
 
 ;; data vars
 (define-data-var next-drop-id uint u0)
@@ -36,6 +45,7 @@
 (define-data-var admin (optional principal) none)
 (define-data-var paused bool false)
 (define-data-var admin-locked bool false)
+(define-data-var claim-signer (optional (buff 33)) none)
 
 ;; data maps
 (define-map drops
@@ -60,6 +70,16 @@
     category: uint,
     skin: uint
   }
+)
+
+(define-map drop-uris
+  {drop-id: uint}
+  {uri: (string-utf8 256)}
+)
+
+(define-map permit-used
+  {player: principal, nonce: uint}
+  {used: bool}
 )
 
 (define-map balances
@@ -105,6 +125,7 @@
 (define-private (mint-token (recipient principal) (drop-id uint) (drop-data {id: uint, category: uint, skin: uint, max-supply: uint, minted: uint, required-badge: uint, active: bool}))
   (let ((token-id (var-get next-token-id)))
     (begin
+      (unwrap! (nft-mint? cosmetic token-id recipient) err-mint-failed)
       (map-set tokens {id: token-id}
         {
           id: token-id,
@@ -117,6 +138,10 @@
       (map-set drops {id: drop-id} (merge drop-data {minted: (+ (get minted drop-data) u1)}))
       (var-set next-token-id (+ token-id u1))
       (ok token-id))))
+
+(define-private (permit-hash (drop-id uint) (recipient principal) (nonce uint))
+  (let ((payload (unwrap-panic (to-consensus-buff? {contract: (as-contract tx-sender), drop-id: drop-id, recipient: recipient, nonce: nonce}))))
+    (sha256 payload)))
 
 ;; admin
 (define-public (init-admin)
@@ -148,6 +173,12 @@
   (begin
     (unwrap! (assert-admin) err-not-admin)
     (var-set paused false)
+    (ok true)))
+
+(define-public (set-claim-signer (pubkey (buff 33)))
+  (begin
+    (unwrap! (assert-admin) err-not-admin)
+    (var-set claim-signer (some pubkey))
     (ok true)))
 
 (define-public (grant-badge (player principal) (badge uint))
@@ -186,6 +217,13 @@
       (map-set drops {id: drop-id} (merge drop-data {active: active}))
       (ok true))))
 
+(define-public (set-drop-uri (drop-id uint) (uri (string-utf8 256)))
+  (begin
+    (unwrap! (assert-admin) err-not-admin)
+    (unwrap! (map-get? drops {id: drop-id}) err-drop-not-found)
+    (map-set drop-uris {drop-id: drop-id} {uri: uri})
+    (ok true)))
+
 (define-public (claim-drop (drop-id uint))
   (let ((drop-data (unwrap! (map-get? drops {id: drop-id}) err-drop-not-found)))
     (begin
@@ -199,14 +237,39 @@
       (map-set claims {drop-id: drop-id, player: tx-sender} {claimed: true})
       (mint-token tx-sender drop-id drop-data))))
 
-(define-public (transfer (token-id uint) (recipient principal))
-  (let ((token (unwrap! (map-get? tokens {id: token-id}) err-token-not-found)))
+(define-public (claim-with-permit (drop-id uint) (nonce uint) (signature (buff 65)))
+  (let ((drop-data (unwrap! (map-get? drops {id: drop-id}) err-drop-not-found)))
     (begin
-      (asserts! (is-eq (get owner token) tx-sender) err-not-owner)
-      (unwrap! (sub-balance tx-sender u1) err-insufficient-balance)
-      (add-balance recipient u1)
-      (map-set tokens {id: token-id} (merge token {owner: recipient}))
-      (ok true))))
+      (unwrap! (assert-not-paused) err-paused)
+      (asserts! (is-eq (get active drop-data) status-active) err-drop-inactive)
+      (asserts! (< (get minted drop-data) (get max-supply drop-data)) err-sold-out)
+      (asserts! (is-none (map-get? claims {drop-id: drop-id, player: tx-sender})) err-already-claimed)
+      (asserts! (is-none (map-get? permit-used {player: tx-sender, nonce: nonce})) err-permit-used)
+      (let ((signer (var-get claim-signer)))
+        (match signer
+          pubkey
+          (begin
+            (asserts! (secp256k1-verify (permit-hash drop-id tx-sender nonce) signature pubkey) err-invalid-signature)
+            (map-set permit-used {player: tx-sender, nonce: nonce} {used: true})
+            (map-set claims {drop-id: drop-id, player: tx-sender} {claimed: true})
+            (mint-token tx-sender drop-id drop-data))
+          err-signer-unset)))))
+
+(define-public (transfer (token-id uint) (sender principal) (recipient principal))
+  (begin
+    (asserts! (is-eq sender tx-sender) err-not-owner)
+    (let ((owner (nft-get-owner? cosmetic token-id)))
+      (match owner
+        current
+        (begin
+          (asserts! (is-eq current sender) err-not-owner)
+          (unwrap! (nft-transfer? cosmetic token-id sender recipient) err-transfer-failed)
+          (unwrap! (sub-balance sender u1) err-insufficient-balance)
+          (add-balance recipient u1)
+          (let ((token (unwrap! (map-get? tokens {id: token-id}) err-token-not-found)))
+            (map-set tokens {id: token-id} (merge token {owner: recipient})))
+          (ok true))
+        err-token-not-found))))
 
 ;; read only functions
 (define-read-only (get-next-drop-id)
@@ -215,17 +278,37 @@
 (define-read-only (get-next-token-id)
   (var-get next-token-id))
 
+(define-read-only (get-last-token-id)
+  (let ((next (var-get next-token-id)))
+    (if (is-eq next u0) (ok u0) (ok (- next u1)))))
+
 (define-read-only (get-drop (drop-id uint))
   (map-get? drops {id: drop-id}))
 
 (define-read-only (get-token (token-id uint))
   (map-get? tokens {id: token-id}))
 
+(define-read-only (get-owner (token-id uint))
+  (ok (nft-get-owner? cosmetic token-id)))
+
+(define-read-only (get-token-uri (token-id uint))
+  (let ((token (map-get? tokens {id: token-id})))
+    (match token
+      record
+      (let ((uri (map-get? drop-uris {drop-id: (get drop-id record)})))
+        (match uri
+          entry (ok (some (get uri entry)))
+          (ok none)))
+      (ok none))))
+
 (define-read-only (get-claim (drop-id uint) (player principal))
   (map-get? claims {drop-id: drop-id, player: player}))
 
 (define-read-only (get-badge (player principal) (badge uint))
   (map-get? badges {player: player, badge: badge}))
+
+(define-read-only (get-claim-signer)
+  (var-get claim-signer))
 
 (define-read-only (get-balance (owner principal))
   (default-to u0 (get count (map-get? balances {owner: owner}))))

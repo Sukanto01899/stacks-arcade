@@ -1,4 +1,4 @@
-;; title: tournament
+;; title: tournament-v2
 ;; version: 1.0.0
 ;; summary: Scheduled tournaments with entry fees and pooled payouts.
 ;; clarity: 4
@@ -36,12 +36,16 @@
 (define-constant err-invalid-winner (err u616))
 (define-constant err-duplicate-winner (err u617))
 (define-constant err-too-late (err u618))
+(define-constant err-rate-limited (err u619))
+(define-constant err-wallet-too-new (err u620))
 
 ;; data vars
 (define-data-var next-tournament-id uint u0)
 (define-data-var admin (optional principal) none)
 (define-data-var paused bool false)
 (define-data-var admin-locked bool false)
+(define-data-var min-action-interval uint u1)
+(define-data-var min-wallet-age uint u0)
 
 ;; data maps
 (define-map tournaments
@@ -70,6 +74,16 @@
   {player: principal, payout: uint}
 )
 
+(define-map player-last-action
+  {player: principal}
+  {height: uint}
+)
+
+(define-map player-first-seen
+  {player: principal}
+  {height: uint}
+)
+
 ;; private helpers
 ;; transfer STX out of the contract
 (define-private (transfer-from-contract (amount uint) (recipient principal))
@@ -85,6 +99,32 @@
 
 (define-private (assert-creator (creator principal))
   (if (is-eq creator tx-sender) (ok true) err-not-creator))
+
+(define-private (touch-first-seen)
+  (if (is-none (map-get? player-first-seen {player: tx-sender}))
+      (map-set player-first-seen {player: tx-sender} {height: stacks-block-height})
+      true))
+
+(define-private (assert-wallet-age)
+  (let ((min-age (var-get min-wallet-age)))
+    (if (is-eq min-age u0)
+        (ok true)
+        (let ((first (map-get? player-first-seen {player: tx-sender})))
+          (match first
+            record (if (>= (- stacks-block-height (get height record)) min-age) (ok true) err-wallet-too-new)
+            err-wallet-too-new)))))
+
+(define-private (assert-rate-limit)
+  (let ((interval (var-get min-action-interval)))
+    (if (is-eq interval u0)
+        (ok true)
+        (let ((last (map-get? player-last-action {player: tx-sender})))
+          (match last
+            record (if (>= (- stacks-block-height (get height record)) interval) (ok true) err-rate-limited)
+            (ok true))))))
+
+(define-private (mark-action)
+  (map-set player-last-action {player: tx-sender} {height: stacks-block-height}))
 
 ;; admin
 (define-public (init-admin)
@@ -118,10 +158,25 @@
     (var-set paused false)
     (ok true)))
 
+(define-public (set-min-action-interval (interval uint))
+  (begin
+    (unwrap! (assert-admin) err-not-admin)
+    (var-set min-action-interval interval)
+    (ok true)))
+
+(define-public (set-min-wallet-age (age uint))
+  (begin
+    (unwrap! (assert-admin) err-not-admin)
+    (var-set min-wallet-age age)
+    (ok true)))
+
 ;; public functions
 (define-public (create-tournament (entry-fee uint) (max-players uint) (start-height uint) (end-height uint) (winner-count uint))
   (begin
     (unwrap! (assert-not-paused) err-paused)
+    (touch-first-seen)
+    (unwrap! (assert-wallet-age) err-wallet-too-new)
+    (unwrap! (assert-rate-limit) err-rate-limited)
     (asserts! (>= entry-fee min-entry) err-entry-low)
     (asserts! (<= entry-fee max-entry) err-entry-high)
     (asserts! (>= max-players u2) err-max-players)
@@ -143,6 +198,7 @@
             prize-pool: u0,
             winner-count: winner-count
           })
+        (mark-action)
         (var-set next-tournament-id (+ tournament-id u1))
         (ok tournament-id)))))
 
@@ -150,6 +206,9 @@
   (let ((tournament (unwrap! (map-get? tournaments {id: tournament-id}) err-not-found)))
     (begin
       (unwrap! (assert-not-paused) err-paused)
+      (touch-first-seen)
+      (unwrap! (assert-wallet-age) err-wallet-too-new)
+      (unwrap! (assert-rate-limit) err-rate-limited)
       (asserts! (is-eq (get status tournament) status-open) err-not-open)
       (asserts! (< stacks-block-height (get start-height tournament)) err-too-late)
       (asserts! (< (get entrants tournament) (get max-players tournament)) err-full)
@@ -159,6 +218,7 @@
       (map-set entrants {tournament-id: tournament-id, player: tx-sender} {joined: true, refunded: false})
       (map-set tournaments {id: tournament-id}
         (merge tournament {entrants: (+ (get entrants tournament) u1), prize-pool: (+ (get prize-pool tournament) (get entry-fee tournament))}))
+      (mark-action)
       (ok true))))
 
 (define-public (lock-tournament (tournament-id uint))
@@ -254,6 +314,12 @@
 
 (define-read-only (is-admin-locked)
   (var-get admin-locked))
+
+(define-read-only (get-min-action-interval)
+  (var-get min-action-interval))
+
+(define-read-only (get-min-wallet-age)
+  (var-get min-wallet-age))
 
 (define-read-only (get-version)
   contract-version)

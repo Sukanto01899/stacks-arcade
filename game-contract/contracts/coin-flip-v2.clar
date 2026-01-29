@@ -1,17 +1,14 @@
-;; title: higher-lower
+;; title: coin-flip-v2
 ;; version: 1.0.0
-;; summary: Commit-reveal higher or lower guessing game.
+;; summary: Commit-reveal coin flip with escrowed wager and treasury backing.
 ;; clarity: 4
 
 ;; constants
 (define-constant contract-version "1.0.0")
-(define-constant min-bet u1000000)
-(define-constant max-bet u100000000)
-(define-constant max-number u9)
-(define-constant choice-lower u0)
-(define-constant choice-higher u1)
+(define-constant min-bet u1000000) ;; 0.01 STX
+(define-constant max-bet u100000000) ;; 1 STX
 (define-constant reveal-delay u1)
-(define-constant reveal-window u144)
+(define-constant reveal-window u144) ;; ~24h at 10m blocks
 (define-constant status-open u0)
 (define-constant status-settled u1)
 (define-constant status-expired u2)
@@ -20,23 +17,27 @@
 (define-constant err-admin-set (err u902))
 (define-constant err-paused (err u903))
 (define-constant err-admin-locked (err u904))
-(define-constant err-invalid-guess (err u400))
-(define-constant err-bet-low (err u401))
-(define-constant err-bet-high (err u402))
-(define-constant err-not-open (err u403))
-(define-constant err-not-player (err u404))
-(define-constant err-transfer (err u405))
-(define-constant err-commit-mismatch (err u406))
-(define-constant err-too-early (err u407))
-(define-constant err-expired (err u408))
-(define-constant err-not-found (err u409))
-(define-constant err-insufficient-treasury (err u410))
+(define-constant err-invalid-pick (err u100))
+(define-constant err-bet-low (err u101))
+(define-constant err-bet-high (err u102))
+(define-constant err-not-open (err u103))
+(define-constant err-not-player (err u104))
+(define-constant err-transfer (err u105))
+(define-constant err-commit-mismatch (err u106))
+(define-constant err-too-early (err u107))
+(define-constant err-expired (err u108))
+(define-constant err-not-found (err u109))
+(define-constant err-insufficient-treasury (err u110))
+(define-constant err-rate-limited (err u111))
+(define-constant err-wallet-too-new (err u112))
 
 ;; data vars
 (define-data-var next-game-id uint u0)
 (define-data-var admin (optional principal) none)
 (define-data-var paused bool false)
 (define-data-var admin-locked bool false)
+(define-data-var min-action-interval uint u1)
+(define-data-var min-wallet-age uint u0)
 
 ;; data maps
 (define-map games
@@ -48,10 +49,19 @@
     commit: (buff 32),
     commit-height: uint,
     status: uint,
-    target: (optional uint),
-    draw: (optional uint),
-    outcome: (optional uint)
+    result: (optional uint),
+    winner: bool
   }
+)
+
+(define-map player-last-action
+  {player: principal}
+  {height: uint}
+)
+
+(define-map player-first-seen
+  {player: principal}
+  {height: uint}
 )
 
 ;; private helpers
@@ -69,22 +79,11 @@
 (define-private (assert-not-paused)
   (if (var-get paused) err-paused (ok true)))
 
-(define-private (num-byte (value uint))
-  (if (is-eq value u0) 0x00
-    (if (is-eq value u1) 0x01
-      (if (is-eq value u2) 0x02
-        (if (is-eq value u3) 0x03
-          (if (is-eq value u4) 0x04
-            (if (is-eq value u5) 0x05
-              (if (is-eq value u6) 0x06
-                (if (is-eq value u7) 0x07
-                  (if (is-eq value u8) 0x08 0x09))))))))))
+(define-private (choice-byte (pick uint))
+  (if (is-eq pick u0) 0x00 0x01))
 
-(define-private (choice-byte (choice uint))
-  (if (is-eq choice choice-lower) 0x00 0x01))
-
-(define-private (commit-hash (secret (buff 32)) (choice uint) (target uint))
-  (sha256 (concat (concat secret (choice-byte choice)) (num-byte target))))
+(define-private (commit-hash (secret (buff 32)) (pick uint))
+  (sha256 (concat secret (choice-byte pick))))
 
 (define-private (random-from-height (height uint))
   (let (
@@ -95,6 +94,32 @@
       (let ((part (unwrap-panic (slice? hash u0 u16))))
         (buff-to-uint-be (unwrap-panic (as-max-len? part u16))))
       u0)))
+
+(define-private (touch-first-seen)
+  (if (is-none (map-get? player-first-seen {player: tx-sender}))
+      (map-set player-first-seen {player: tx-sender} {height: stacks-block-height})
+      true))
+
+(define-private (assert-wallet-age)
+  (let ((min-age (var-get min-wallet-age)))
+    (if (is-eq min-age u0)
+        (ok true)
+        (let ((first (map-get? player-first-seen {player: tx-sender})))
+          (match first
+            record (if (>= (- stacks-block-height (get height record)) min-age) (ok true) err-wallet-too-new)
+            err-wallet-too-new)))))
+
+(define-private (assert-rate-limit)
+  (let ((interval (var-get min-action-interval)))
+    (if (is-eq interval u0)
+        (ok true)
+        (let ((last (map-get? player-last-action {player: tx-sender})))
+          (match last
+            record (if (>= (- stacks-block-height (get height record)) interval) (ok true) err-rate-limited)
+            (ok true))))))
+
+(define-private (mark-action)
+  (map-set player-last-action {player: tx-sender} {height: stacks-block-height}))
 
 ;; admin
 (define-public (init-admin)
@@ -128,6 +153,18 @@
     (var-set paused false)
     (ok true)))
 
+(define-public (set-min-action-interval (interval uint))
+  (begin
+    (unwrap! (assert-admin) err-not-admin)
+    (var-set min-action-interval interval)
+    (ok true)))
+
+(define-public (set-min-wallet-age (age uint))
+  (begin
+    (unwrap! (assert-admin) err-not-admin)
+    (var-set min-wallet-age age)
+    (ok true)))
+
 (define-public (treasury-withdraw (amount uint))
   (begin
     (unwrap! (assert-admin) err-not-admin)
@@ -141,6 +178,9 @@
 (define-public (create-game (wager uint) (commit (buff 32)))
   (begin
     (unwrap! (assert-not-paused) err-paused)
+    (touch-first-seen)
+    (unwrap! (assert-wallet-age) err-wallet-too-new)
+    (unwrap! (assert-rate-limit) err-rate-limited)
     (asserts! (>= wager min-bet) err-bet-low)
     (asserts! (<= wager max-bet) err-bet-high)
     (let
@@ -158,22 +198,21 @@
             commit: commit,
             commit-height: stacks-block-height,
             status: status-open,
-            target: none,
-            draw: none,
-            outcome: none
+            result: none,
+            winner: false
           })
+        (mark-action)
         (var-set next-game-id (+ game-id u1))
         (ok game-id)))))
 
-(define-public (reveal (game-id uint) (choice uint) (target uint) (secret (buff 32)))
+(define-public (reveal (game-id uint) (pick uint) (secret (buff 32)))
   (let ((game (unwrap! (map-get? games {id: game-id}) err-not-found)))
     (begin
       (unwrap! (assert-not-paused) err-paused)
-      (asserts! (or (is-eq choice choice-lower) (is-eq choice choice-higher)) err-invalid-guess)
-      (asserts! (<= target max-number) err-invalid-guess)
       (asserts! (is-eq (get status game) status-open) err-not-open)
       (asserts! (is-eq (get player game) tx-sender) err-not-player)
-      (asserts! (is-eq (commit-hash secret choice target) (get commit game)) err-commit-mismatch)
+      (asserts! (or (is-eq pick u0) (is-eq pick u1)) err-invalid-pick)
+      (asserts! (is-eq (commit-hash secret pick) (get commit game)) err-commit-mismatch)
       (let
         (
           (reveal-height (+ (get commit-height game) reveal-delay))
@@ -184,9 +223,9 @@
           (asserts! (<= stacks-block-height expire-height) err-expired)
           (let
             (
-              (draw (mod (random-from-height reveal-height) (+ max-number u1)))
-              (outcome (if (is-eq draw target) u2 (if (and (is-eq choice choice-higher) (> draw target)) u1 (if (and (is-eq choice choice-lower) (< draw target)) u1 u0))))
-              (payout (if (is-eq outcome u1) (* (get wager game) u2) (if (is-eq outcome u2) (get wager game) u0)))
+              (result (mod (random-from-height reveal-height) u2))
+              (winner (is-eq pick result))
+              (payout (if (is-eq pick result) (* (get wager game) u2) u0))
             )
             (begin
               (if (> payout u0)
@@ -195,8 +234,8 @@
                     (asserts! (>= balance payout) err-insufficient-treasury))
                   (unwrap! (transfer-from-contract payout (get player game)) err-transfer))
                 true)
-              (map-set games {id: game-id} (merge game {status: status-settled, target: (some target), draw: (some draw), outcome: (some outcome)}))
-              (ok {draw: draw, outcome: outcome, payout: payout}))))))))
+              (map-set games {id: game-id} (merge game {status: status-settled, result: (some result), winner: winner}))
+              (ok {result: result, winner: winner, payout: payout}))))))))
 
 (define-public (expire-game (game-id uint))
   (let ((game (unwrap! (map-get? games {id: game-id}) err-not-found)))
@@ -228,6 +267,12 @@
 
 (define-read-only (is-admin-locked)
   (var-get admin-locked))
+
+(define-read-only (get-min-action-interval)
+  (var-get min-action-interval))
+
+(define-read-only (get-min-wallet-age)
+  (var-get min-wallet-age))
 
 (define-read-only (get-version)
   contract-version)

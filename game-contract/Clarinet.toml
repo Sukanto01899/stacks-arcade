@@ -5,63 +5,68 @@ authors = []
 telemetry = false
 cache_dir = './.cache'
 requirements = []
-[contracts.coin-flip]
-path = 'contracts/coin-flip.clar'
+[contracts.coin-flip-v2]
+path = 'contracts/coin-flip-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.emoji-battle]
-path = 'contracts/emoji-battle.clar'
+[contracts.emoji-battle-v2]
+path = 'contracts/emoji-battle-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.guess-the-number]
-path = 'contracts/guess-the-number.clar'
+[contracts.guess-the-number-v2]
+path = 'contracts/guess-the-number-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.higher-lower]
-path = 'contracts/higher-lower.clar'
+[contracts.higher-lower-v2]
+path = 'contracts/higher-lower-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.hot-potato]
-path = 'contracts/hot-potato.clar'
+[contracts.hot-potato-v2]
+path = 'contracts/hot-potato-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.lottery-demo]
-path = 'contracts/lottery-demo.clar'
+[contracts.lottery-demo-v2]
+path = 'contracts/lottery-demo-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.rock-paper-scissors]
-path = 'contracts/rock-paper-scissors.clar'
+[contracts.rock-paper-scissors-v2]
+path = 'contracts/rock-paper-scissors-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.tournament]
-path = 'contracts/tournament.clar'
+[contracts.tournament-v2]
+path = 'contracts/tournament-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.cosmetics]
-path = 'contracts/cosmetics.clar'
+[contracts.cosmetics-v2]
+path = 'contracts/cosmetics-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.scoreboard]
-path = 'contracts/scoreboard.clar'
+[contracts.sip009-nft-trait-v2]
+path = 'contracts/sip009-nft-trait-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.tic-tac-toe]
-path = 'contracts/tic-tac-toe.clar'
+[contracts.scoreboard-v2]
+path = 'contracts/scoreboard-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.todo-list]
-path = 'contracts/todo-list.clar'
+[contracts.tic-tac-toe-v2]
+path = 'contracts/tic-tac-toe-v2.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.todo-list-v2]
+path = 'contracts/todo-list-v2.clar'
 clarity_version = 3
 epoch = '3.0'
 [repl.analysis]

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AppConfig, UserSession, authenticate, openContractCall } from "@stacks/connect";
@@ -10,6 +10,7 @@ import {
   bufferCV,
   cvToJSON,
   fetchCallReadOnlyFunction,
+  stringUtf8CV,
   standardPrincipalCV,
   uintCV,
 } from "@stacks/transactions";
@@ -24,18 +25,18 @@ const DEFAULT_NETWORK = (() => {
 })();
 
 const CONTRACT_NAMES = {
-  coinFlip: process.env.NEXT_PUBLIC_COIN_FLIP_NAME ?? "coin-flip",
-  guessTheNumber: process.env.NEXT_PUBLIC_GUESS_THE_NUMBER_NAME ?? "guess-the-number",
-  higherLower: process.env.NEXT_PUBLIC_HIGHER_LOWER_NAME ?? "higher-lower",
-  emojiBattle: process.env.NEXT_PUBLIC_EMOJI_BATTLE_NAME ?? "emoji-battle",
-  rockPaperScissors: process.env.NEXT_PUBLIC_ROCK_PAPER_SCISSORS_NAME ?? "rock-paper-scissors",
-  hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato",
-  lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo",
-  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament",
-  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics",
-  scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard",
-  ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe",
-  todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list",
+  coinFlip: process.env.NEXT_PUBLIC_COIN_FLIP_NAME ?? "coin-flip-v2",
+  guessTheNumber: process.env.NEXT_PUBLIC_GUESS_THE_NUMBER_NAME ?? "guess-the-number-v2",
+  higherLower: process.env.NEXT_PUBLIC_HIGHER_LOWER_NAME ?? "higher-lower-v2",
+  emojiBattle: process.env.NEXT_PUBLIC_EMOJI_BATTLE_NAME ?? "emoji-battle-v2",
+  rockPaperScissors: process.env.NEXT_PUBLIC_ROCK_PAPER_SCISSORS_NAME ?? "rock-paper-scissors-v2",
+  hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato-v2",
+  lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo-v2",
+  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament-v2",
+  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics-v2",
+  scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard-v2",
+  ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe-v2",
+  todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list-v2",
 };
 
 const CONTRACT_OVERRIDES = {
@@ -333,10 +334,14 @@ export default function Home() {
   const [cosmeticsSkin, setCosmeticsSkin] = useState("0");
   const [cosmeticsMaxSupply, setCosmeticsMaxSupply] = useState("100");
   const [cosmeticsRequiredBadge, setCosmeticsRequiredBadge] = useState("0");
+  const [cosmeticsDropUri, setCosmeticsDropUri] = useState("");
   const [cosmeticsDropId, setCosmeticsDropId] = useState("");
   const [cosmeticsActive, setCosmeticsActive] = useState("true");
+  const [cosmeticsClaimSigner, setCosmeticsClaimSigner] = useState("");
   const [cosmeticsBadgePlayer, setCosmeticsBadgePlayer] = useState("");
   const [cosmeticsBadgeId, setCosmeticsBadgeId] = useState("0");
+  const [cosmeticsPermitNonce, setCosmeticsPermitNonce] = useState("");
+  const [cosmeticsPermitSig, setCosmeticsPermitSig] = useState("");
   const [cosmeticsTokenId, setCosmeticsTokenId] = useState("");
   const [cosmeticsTransferTo, setCosmeticsTransferTo] = useState("");
 
@@ -494,19 +499,19 @@ export default function Home() {
   };
 
   const gameMenu = [
-    { id: "all", label: "All Games", emoji: "✨" },
-    { id: "coin-flip", label: "Coin Flip", emoji: "🪙" },
-    { id: "guess", label: "Guess the Number", emoji: "🔮" },
-    { id: "higher", label: "Higher / Lower", emoji: "📈" },
-    { id: "emoji", label: "Emoji Battle", emoji: "🔥" },
-    { id: "rps", label: "Rock Paper Scissors", emoji: "✂️" },
-    { id: "hot-potato", label: "Hot Potato", emoji: "🥔" },
-    { id: "lottery", label: "Lottery", emoji: "🎟️" },
-    { id: "tournament", label: "Tournaments", emoji: "🥇" },
-    { id: "cosmetics", label: "Cosmetics", emoji: "🧢" },
-    { id: "scoreboard", label: "Scoreboard", emoji: "🏆" },
-    { id: "tic-tac-toe", label: "Tic Tac Toe", emoji: "❌" },
-    { id: "todo", label: "Todo List", emoji: "✅" },
+    { id: "all", label: "All Games", emoji: "?" },
+    { id: "coin-flip", label: "Coin Flip", emoji: "??" },
+    { id: "guess", label: "Guess the Number", emoji: "??" },
+    { id: "higher", label: "Higher / Lower", emoji: "??" },
+    { id: "emoji", label: "Emoji Battle", emoji: "??" },
+    { id: "rps", label: "Rock Paper Scissors", emoji: "??" },
+    { id: "hot-potato", label: "Hot Potato", emoji: "??" },
+    { id: "lottery", label: "Lottery", emoji: "???" },
+    { id: "tournament", label: "Tournaments", emoji: "??" },
+    { id: "cosmetics", label: "Cosmetics", emoji: "??" },
+    { id: "scoreboard", label: "Scoreboard", emoji: "??" },
+    { id: "tic-tac-toe", label: "Tic Tac Toe", emoji: "?" },
+    { id: "todo", label: "Todo List", emoji: "?" },
   ];
 
   const shouldShow = (id: string) => activeGame === "all" || activeGame === id;
@@ -620,8 +625,8 @@ export default function Home() {
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">How to play</p>
             <p className="mt-2">
-              Most games are commit‑reveal. Generate a secret, create a commit, then reveal it
-              to finish the round. Match the other player’s move or the random outcome.
+              Most games are commit-reveal. Generate a secret, create a commit, then reveal it
+              to finish the round. Match the other player�s move or the random outcome.
             </p>
           </div>
           <div>
@@ -640,7 +645,7 @@ export default function Home() {
                 <p className="text-xs uppercase tracking-[0.35em] text-[#3a4156]">Game Menu</p>
                 <p className="text-lg font-semibold text-[#10131f]">Choose your chaos</p>
               </div>
-              <span className="text-xl">🎮</span>
+              <span className="text-xl">??</span>
             </div>
             <nav className="mt-4 flex flex-col gap-2">
               {gameMenu.map((item) => {
@@ -1173,6 +1178,7 @@ export default function Home() {
               <Field label="Skin id" value={cosmeticsSkin} onChange={setCosmeticsSkin} />
               <Field label="Max supply" value={cosmeticsMaxSupply} onChange={setCosmeticsMaxSupply} />
               <Field label="Required badge (0 = none)" value={cosmeticsRequiredBadge} onChange={setCosmeticsRequiredBadge} />
+              <Field label="Drop URI" value={cosmeticsDropUri} onChange={setCosmeticsDropUri} />
               <Field label="Drop id" value={cosmeticsDropId} onChange={setCosmeticsDropId} />
               <SelectField
                 label="Active"
@@ -1183,8 +1189,11 @@ export default function Home() {
                   { label: "False", value: "false" },
                 ]}
               />
+              <Field label="Claim signer pubkey (hex)" value={cosmeticsClaimSigner} onChange={setCosmeticsClaimSigner} />
               <Field label="Badge player" value={cosmeticsBadgePlayer} onChange={setCosmeticsBadgePlayer} />
               <Field label="Badge id" value={cosmeticsBadgeId} onChange={setCosmeticsBadgeId} />
+              <Field label="Permit nonce" value={cosmeticsPermitNonce} onChange={setCosmeticsPermitNonce} />
+              <Field label="Permit signature (hex)" value={cosmeticsPermitSig} onChange={setCosmeticsPermitSig} />
               <Field label="Token id" value={cosmeticsTokenId} onChange={setCosmeticsTokenId} />
               <Field label="Transfer to" value={cosmeticsTransferTo} onChange={setCosmeticsTransferTo} />
             </div>
@@ -1201,6 +1210,16 @@ export default function Home() {
                 }
               />
               <ActionButton
+                label="Set drop URI"
+                onClick={() =>
+                  runContractCall(contracts.cosmetics, "set-drop-uri", [
+                    uintCV(toUint(cosmeticsDropId)),
+                    stringUtf8CV(cosmeticsDropUri),
+                  ])
+                }
+                tone="secondary"
+              />
+              <ActionButton
                 label="Set drop active"
                 onClick={() =>
                   runContractCall(contracts.cosmetics, "set-drop-active", [
@@ -1208,6 +1227,18 @@ export default function Home() {
                     boolCV(cosmeticsActive === "true"),
                   ])
                 }
+                tone="secondary"
+              />
+              <ActionButton
+                label="Set claim signer"
+                onClick={() => {
+                  const pubkeyBytes = hexToBytes(cosmeticsClaimSigner);
+                  if (!pubkeyBytes || pubkeyBytes.length !== 33) {
+                    setStatusMessage("error", "Signer pubkey must be 33 bytes of hex.");
+                    return;
+                  }
+                  runContractCall(contracts.cosmetics, "set-claim-signer", [bufferCV(pubkeyBytes)]);
+                }}
                 tone="secondary"
               />
               <ActionButton
@@ -1227,13 +1258,34 @@ export default function Home() {
                 }
               />
               <ActionButton
+                label="Claim with permit"
+                onClick={() => {
+                  const sigBytes = hexToBytes(cosmeticsPermitSig);
+                  if (!sigBytes || sigBytes.length !== 65) {
+                    setStatusMessage("error", "Signature must be 65 bytes of hex.");
+                    return;
+                  }
+                  runContractCall(contracts.cosmetics, "claim-with-permit", [
+                    uintCV(toUint(cosmeticsDropId)),
+                    uintCV(toUint(cosmeticsPermitNonce)),
+                    bufferCV(sigBytes),
+                  ]);
+                }}
+                tone="secondary"
+              />
+              <ActionButton
                 label="Transfer token"
-                onClick={() =>
+                onClick={() => {
+                  if (!stxAddress) {
+                    setStatusMessage("error", "Connect a wallet before transferring.");
+                    return;
+                  }
                   runContractCall(contracts.cosmetics, "transfer", [
                     uintCV(toUint(cosmeticsTokenId)),
+                    standardPrincipalCV(stxAddress),
                     standardPrincipalCV(cosmeticsTransferTo),
-                  ])
-                }
+                  ]);
+                }}
                 tone="secondary"
               />
             </div>
@@ -1246,6 +1298,13 @@ export default function Home() {
               <ActionButton
                 label="Get token"
                 onClick={() => callReadOnly(contracts.cosmetics, "get-token", [uintCV(toUint(cosmeticsTokenId))])}
+                tone="secondary"
+              />
+              <ActionButton
+                label="Get token URI"
+                onClick={() =>
+                  callReadOnly(contracts.cosmetics, "get-token-uri", [uintCV(toUint(cosmeticsTokenId))])
+                }
                 tone="secondary"
               />
               <ActionButton

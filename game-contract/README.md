@@ -5,16 +5,16 @@ Clarity 3 (epoch 3.0) to match Clarinet 3.8.1.
 
 ## Contracts
 
-- coin-flip
-- emoji-battle
-- guess-the-number
-- higher-lower
-- hot-potato
-- lottery-demo
-- rock-paper-scissors
-- scoreboard
-- tic-tac-toe
-- todo-list
+- coin-flip-v2
+- emoji-battle-v2
+- guess-the-number-v2
+- higher-lower-v2
+- hot-potato-v2
+- lottery-demo-v2
+- rock-paper-scissors-v2
+- scoreboard-v2
+- tic-tac-toe-v2
+- todo-list-v2
 
 See `game-contract/Clarinet.toml` for the full list and paths.
 

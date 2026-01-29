@@ -5,8 +5,8 @@ import { makeCommit, makeSecret, mineBlocks, secretCv } from "./helpers";
 const accounts = simnet.getAccounts();
 const wallet1 = accounts.get("wallet_1")!;
 const wallet2 = accounts.get("wallet_2")!;
-const contractName = "coin-flip";
-const contractPrincipal = `${simnet.deployer}.coin-flip`;
+const contractName = "coin-flip-v2";
+const contractPrincipal = `${simnet.deployer}.coin-flip-v2`;
 
 const getGame = (id: number) => {
   const entry = simnet.getMapEntry(contractName, "games", Cl.tuple({ id: Cl.uint(id) }));
@@ -14,7 +14,7 @@ const getGame = (id: number) => {
   return (entry as SomeCV<TupleCV>).value;
 };
 
-describe("coin-flip", () => {
+describe("coin-flip-v2", () => {
   it("creates and reveals a game with a valid commit", () => {
     simnet.transferSTX(5_000_000n, contractPrincipal, simnet.deployer);
     const secret = makeSecret(1);

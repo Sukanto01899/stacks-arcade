@@ -5,7 +5,7 @@ import { makeCommit, makeSecret, mineBlocks, secretCv } from "./helpers";
 const accounts = simnet.getAccounts();
 const wallet1 = accounts.get("wallet_1")!;
 const wallet2 = accounts.get("wallet_2")!;
-const contractName = "rock-paper-scissors";
+const contractName = "rock-paper-scissors-v2";
 
 const getGame = (id: number) => {
   const entry = simnet.getMapEntry(contractName, "games", Cl.tuple({ id: Cl.uint(id) }));
@@ -13,7 +13,7 @@ const getGame = (id: number) => {
   return (entry as SomeCV<TupleCV>).value;
 };
 
-describe("rock-paper-scissors", () => {
+describe("rock-paper-scissors-v2", () => {
   it("settles after both players reveal", () => {
     const secret1 = makeSecret(1);
     const secret2 = makeSecret(2);

@@ -1,4 +1,4 @@
-;; title: lottery-demo
+;; title: lottery-demo-v2
 ;; version: 1.0.0
 ;; summary: Simple raffle with ticket purchases and block-hash draw.
 ;; clarity: 4
