@@ -40,6 +40,16 @@ path = 'contracts/rock-paper-scissors.clar'
 clarity_version = 3
 epoch = '3.0'
 
+[contracts.tournament]
+path = 'contracts/tournament.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.cosmetics]
+path = 'contracts/cosmetics.clar'
+clarity_version = 3
+epoch = '3.0'
+
 [contracts.scoreboard]
 path = 'contracts/scoreboard.clar'
 clarity_version = 3

@@ -32,6 +32,7 @@ const CONTRACT_NAMES = {
   hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato",
   lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo",
   tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament",
+  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics",
   scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard",
   ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe",
   todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list",
@@ -47,6 +48,7 @@ const CONTRACT_OVERRIDES = {
     hotPotato: process.env.NEXT_PUBLIC_TESTNET_HOT_POTATO_CONTRACT ?? "",
     lottery: process.env.NEXT_PUBLIC_TESTNET_LOTTERY_CONTRACT ?? "",
     tournament: process.env.NEXT_PUBLIC_TESTNET_TOURNAMENT_CONTRACT ?? "",
+    cosmetics: process.env.NEXT_PUBLIC_TESTNET_COSMETICS_CONTRACT ?? "",
     scoreboard: process.env.NEXT_PUBLIC_TESTNET_SCOREBOARD_CONTRACT ?? "",
     ticTacToe: process.env.NEXT_PUBLIC_TESTNET_TIC_TAC_TOE_CONTRACT ?? "",
     todoList: process.env.NEXT_PUBLIC_TESTNET_TODO_LIST_CONTRACT ?? "",
@@ -61,6 +63,7 @@ const CONTRACT_OVERRIDES = {
     hotPotato: process.env.NEXT_PUBLIC_MAINNET_HOT_POTATO_CONTRACT ?? "",
     lottery: process.env.NEXT_PUBLIC_MAINNET_LOTTERY_CONTRACT ?? "",
     tournament: process.env.NEXT_PUBLIC_MAINNET_TOURNAMENT_CONTRACT ?? "",
+    cosmetics: process.env.NEXT_PUBLIC_MAINNET_COSMETICS_CONTRACT ?? "",
     scoreboard: process.env.NEXT_PUBLIC_MAINNET_SCOREBOARD_CONTRACT ?? "",
     ticTacToe: process.env.NEXT_PUBLIC_MAINNET_TIC_TAC_TOE_CONTRACT ?? "",
     todoList: process.env.NEXT_PUBLIC_MAINNET_TODO_LIST_CONTRACT ?? "",
@@ -111,6 +114,7 @@ function useContracts(network: NetworkKey) {
     hotPotato: parseContractOverride(overrides.hotPotato, CONTRACT_NAMES.hotPotato, overrides.deployer),
     lottery: parseContractOverride(overrides.lottery, CONTRACT_NAMES.lottery, overrides.deployer),
     tournament: parseContractOverride(overrides.tournament, CONTRACT_NAMES.tournament, overrides.deployer),
+    cosmetics: parseContractOverride(overrides.cosmetics, CONTRACT_NAMES.cosmetics, overrides.deployer),
     scoreboard: parseContractOverride(overrides.scoreboard, CONTRACT_NAMES.scoreboard, overrides.deployer),
     ticTacToe: parseContractOverride(overrides.ticTacToe, CONTRACT_NAMES.ticTacToe, overrides.deployer),
     todoList: parseContractOverride(overrides.todoList, CONTRACT_NAMES.todoList, overrides.deployer),
@@ -325,6 +329,17 @@ export default function Home() {
   const [tournamentWinner2, setTournamentWinner2] = useState("");
   const [tournamentWinner3, setTournamentWinner3] = useState("");
 
+  const [cosmeticsCategory, setCosmeticsCategory] = useState("0");
+  const [cosmeticsSkin, setCosmeticsSkin] = useState("0");
+  const [cosmeticsMaxSupply, setCosmeticsMaxSupply] = useState("100");
+  const [cosmeticsRequiredBadge, setCosmeticsRequiredBadge] = useState("0");
+  const [cosmeticsDropId, setCosmeticsDropId] = useState("");
+  const [cosmeticsActive, setCosmeticsActive] = useState("true");
+  const [cosmeticsBadgePlayer, setCosmeticsBadgePlayer] = useState("");
+  const [cosmeticsBadgeId, setCosmeticsBadgeId] = useState("0");
+  const [cosmeticsTokenId, setCosmeticsTokenId] = useState("");
+  const [cosmeticsTransferTo, setCosmeticsTransferTo] = useState("");
+
   const [scorePlayer, setScorePlayer] = useState("");
   const [scoreValue, setScoreValue] = useState("0");
   const [scoreDelta, setScoreDelta] = useState("1");
@@ -488,6 +503,7 @@ export default function Home() {
     { id: "hot-potato", label: "Hot Potato", emoji: "🥔" },
     { id: "lottery", label: "Lottery", emoji: "🎟️" },
     { id: "tournament", label: "Tournaments", emoji: "🥇" },
+    { id: "cosmetics", label: "Cosmetics", emoji: "🧢" },
     { id: "scoreboard", label: "Scoreboard", emoji: "🏆" },
     { id: "tic-tac-toe", label: "Tic Tac Toe", emoji: "❌" },
     { id: "todo", label: "Todo List", emoji: "✅" },
@@ -1133,6 +1149,111 @@ export default function Home() {
                     standardPrincipalCV(tournamentWinner1),
                     standardPrincipalCV(tournamentWinner2),
                     standardPrincipalCV(tournamentWinner3),
+                  ])
+                }
+                tone="secondary"
+              />
+            </div>
+                </PageSection>
+              )}
+
+              {shouldShow("cosmetics") && (
+                <PageSection title="Cosmetics" subtitle="NFT skins for coins, tables, and avatars.">
+            <div className="grid gap-4 md:grid-cols-2">
+              <SelectField
+                label="Category"
+                value={cosmeticsCategory}
+                onChange={setCosmeticsCategory}
+                options={[
+                  { label: "Coin (0)", value: "0" },
+                  { label: "Table (1)", value: "1" },
+                  { label: "Avatar (2)", value: "2" },
+                ]}
+              />
+              <Field label="Skin id" value={cosmeticsSkin} onChange={setCosmeticsSkin} />
+              <Field label="Max supply" value={cosmeticsMaxSupply} onChange={setCosmeticsMaxSupply} />
+              <Field label="Required badge (0 = none)" value={cosmeticsRequiredBadge} onChange={setCosmeticsRequiredBadge} />
+              <Field label="Drop id" value={cosmeticsDropId} onChange={setCosmeticsDropId} />
+              <SelectField
+                label="Active"
+                value={cosmeticsActive}
+                onChange={setCosmeticsActive}
+                options={[
+                  { label: "True", value: "true" },
+                  { label: "False", value: "false" },
+                ]}
+              />
+              <Field label="Badge player" value={cosmeticsBadgePlayer} onChange={setCosmeticsBadgePlayer} />
+              <Field label="Badge id" value={cosmeticsBadgeId} onChange={setCosmeticsBadgeId} />
+              <Field label="Token id" value={cosmeticsTokenId} onChange={setCosmeticsTokenId} />
+              <Field label="Transfer to" value={cosmeticsTransferTo} onChange={setCosmeticsTransferTo} />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <ActionButton
+                label="Create drop"
+                onClick={() =>
+                  runContractCall(contracts.cosmetics, "create-drop", [
+                    uintCV(toUint(cosmeticsCategory)),
+                    uintCV(toUint(cosmeticsSkin)),
+                    uintCV(toUint(cosmeticsMaxSupply)),
+                    uintCV(toUint(cosmeticsRequiredBadge)),
+                  ])
+                }
+              />
+              <ActionButton
+                label="Set drop active"
+                onClick={() =>
+                  runContractCall(contracts.cosmetics, "set-drop-active", [
+                    uintCV(toUint(cosmeticsDropId)),
+                    boolCV(cosmeticsActive === "true"),
+                  ])
+                }
+                tone="secondary"
+              />
+              <ActionButton
+                label="Grant badge"
+                onClick={() =>
+                  runContractCall(contracts.cosmetics, "grant-badge", [
+                    standardPrincipalCV(cosmeticsBadgePlayer),
+                    uintCV(toUint(cosmeticsBadgeId)),
+                  ])
+                }
+                tone="secondary"
+              />
+              <ActionButton
+                label="Claim drop"
+                onClick={() =>
+                  runContractCall(contracts.cosmetics, "claim-drop", [uintCV(toUint(cosmeticsDropId))])
+                }
+              />
+              <ActionButton
+                label="Transfer token"
+                onClick={() =>
+                  runContractCall(contracts.cosmetics, "transfer", [
+                    uintCV(toUint(cosmeticsTokenId)),
+                    standardPrincipalCV(cosmeticsTransferTo),
+                  ])
+                }
+                tone="secondary"
+              />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <ActionButton
+                label="Get drop"
+                onClick={() => callReadOnly(contracts.cosmetics, "get-drop", [uintCV(toUint(cosmeticsDropId))])}
+                tone="secondary"
+              />
+              <ActionButton
+                label="Get token"
+                onClick={() => callReadOnly(contracts.cosmetics, "get-token", [uintCV(toUint(cosmeticsTokenId))])}
+                tone="secondary"
+              />
+              <ActionButton
+                label="Get badge"
+                onClick={() =>
+                  callReadOnly(contracts.cosmetics, "get-badge", [
+                    standardPrincipalCV(cosmeticsBadgePlayer),
+                    uintCV(toUint(cosmeticsBadgeId)),
                   ])
                 }
                 tone="secondary"
