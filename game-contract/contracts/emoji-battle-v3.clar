@@ -1,4 +1,4 @@
-;; title: emoji-battle-v2
+;; title: emoji-battle-v3
 ;; version: 1.0.0
 ;; summary: Two-player emoji battle with commit-reveal and escrowed stakes.
 ;; clarity: 4

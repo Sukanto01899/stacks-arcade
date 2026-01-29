@@ -1,4 +1,4 @@
-;; title: todo-list-v2
+;; title: todo-list-v3
 ;; version: 1.0.0
 ;; summary: Minimal on-chain task list with low storage footprint.
 ;; clarity: 4

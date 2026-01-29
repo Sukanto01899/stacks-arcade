@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 const accounts = simnet.getAccounts();
 const wallet1 = accounts.get("wallet_1")!;
 const wallet2 = accounts.get("wallet_2")!;
-const contractName = "lottery-demo-v2";
+const contractName = "lottery-demo-v3";
 
 const getRound = (id: number) => {
   const entry = simnet.getMapEntry(contractName, "rounds", Cl.tuple({ id: Cl.uint(id) }));
@@ -12,7 +12,7 @@ const getRound = (id: number) => {
   return (entry as SomeCV<TupleCV>).value;
 };
 
-describe("lottery-demo-v2", () => {
+describe("lottery-demo-v3", () => {
   it("creates a round, sells tickets, and draws a winner", () => {
     simnet.callPublicFn(contractName, "init-admin", [], wallet1);
     const create = simnet.callPublicFn(

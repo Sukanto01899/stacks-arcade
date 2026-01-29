@@ -1,6 +1,6 @@
-;; title: tic-tac-toe-v2
+;; title: tic-tac-toe-v3
 ;; version: 1.0.0
-;; summary: Two-player tic-tac-toe-v2 with compact bitboard storage.
+;; summary: Two-player tic-tac-toe-v3 with compact bitboard storage.
 ;; clarity: 4
 
 ;; constants

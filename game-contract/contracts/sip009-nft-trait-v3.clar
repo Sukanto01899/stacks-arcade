@@ -1,4 +1,4 @@
-;; title: sip009-nft-trait-v2
+;; title: sip009-nft-trait
 ;; version: 1.0.0
 ;; summary: SIP-009 NFT trait definition.
 ;; clarity: 4

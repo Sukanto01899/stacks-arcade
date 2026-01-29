@@ -1,15 +1,13 @@
-;; title: higher-lower-v2
+;; title: guess-the-number-v3
 ;; version: 1.0.0
-;; summary: Commit-reveal higher or lower guessing game.
+;; summary: Commit-reveal number guessing with escrowed wager.
 ;; clarity: 4
 
 ;; constants
 (define-constant contract-version "1.0.0")
-(define-constant min-bet u1000000)
-(define-constant max-bet u100000000)
+(define-constant min-bet u1000000) ;; 0.01 STX
+(define-constant max-bet u100000000) ;; 1 STX
 (define-constant max-number u9)
-(define-constant choice-lower u0)
-(define-constant choice-higher u1)
 (define-constant reveal-delay u1)
 (define-constant reveal-window u144)
 (define-constant status-open u0)
@@ -48,9 +46,8 @@
     commit: (buff 32),
     commit-height: uint,
     status: uint,
-    target: (optional uint),
     draw: (optional uint),
-    outcome: (optional uint)
+    winner: bool
   }
 )
 
@@ -69,22 +66,19 @@
 (define-private (assert-not-paused)
   (if (var-get paused) err-paused (ok true)))
 
-(define-private (num-byte (value uint))
-  (if (is-eq value u0) 0x00
-    (if (is-eq value u1) 0x01
-      (if (is-eq value u2) 0x02
-        (if (is-eq value u3) 0x03
-          (if (is-eq value u4) 0x04
-            (if (is-eq value u5) 0x05
-              (if (is-eq value u6) 0x06
-                (if (is-eq value u7) 0x07
-                  (if (is-eq value u8) 0x08 0x09))))))))))
+(define-private (num-byte (guess uint))
+  (if (is-eq guess u0) 0x00
+    (if (is-eq guess u1) 0x01
+      (if (is-eq guess u2) 0x02
+        (if (is-eq guess u3) 0x03
+          (if (is-eq guess u4) 0x04
+            (if (is-eq guess u5) 0x05
+              (if (is-eq guess u6) 0x06
+                (if (is-eq guess u7) 0x07
+                  (if (is-eq guess u8) 0x08 0x09))))))))))
 
-(define-private (choice-byte (choice uint))
-  (if (is-eq choice choice-lower) 0x00 0x01))
-
-(define-private (commit-hash (secret (buff 32)) (choice uint) (target uint))
-  (sha256 (concat (concat secret (choice-byte choice)) (num-byte target))))
+(define-private (commit-hash (secret (buff 32)) (guess uint))
+  (sha256 (concat secret (num-byte guess))))
 
 (define-private (random-from-height (height uint))
   (let (
@@ -158,22 +152,20 @@
             commit: commit,
             commit-height: stacks-block-height,
             status: status-open,
-            target: none,
             draw: none,
-            outcome: none
+            winner: false
           })
         (var-set next-game-id (+ game-id u1))
         (ok game-id)))))
 
-(define-public (reveal (game-id uint) (choice uint) (target uint) (secret (buff 32)))
+(define-public (reveal (game-id uint) (guess uint) (secret (buff 32)))
   (let ((game (unwrap! (map-get? games {id: game-id}) err-not-found)))
     (begin
       (unwrap! (assert-not-paused) err-paused)
-      (asserts! (or (is-eq choice choice-lower) (is-eq choice choice-higher)) err-invalid-guess)
-      (asserts! (<= target max-number) err-invalid-guess)
+      (asserts! (<= guess max-number) err-invalid-guess)
       (asserts! (is-eq (get status game) status-open) err-not-open)
       (asserts! (is-eq (get player game) tx-sender) err-not-player)
-      (asserts! (is-eq (commit-hash secret choice target) (get commit game)) err-commit-mismatch)
+      (asserts! (is-eq (commit-hash secret guess) (get commit game)) err-commit-mismatch)
       (let
         (
           (reveal-height (+ (get commit-height game) reveal-delay))
@@ -185,8 +177,8 @@
           (let
             (
               (draw (mod (random-from-height reveal-height) (+ max-number u1)))
-              (outcome (if (is-eq draw target) u2 (if (and (is-eq choice choice-higher) (> draw target)) u1 (if (and (is-eq choice choice-lower) (< draw target)) u1 u0))))
-              (payout (if (is-eq outcome u1) (* (get wager game) u2) (if (is-eq outcome u2) (get wager game) u0)))
+              (winner (is-eq guess draw))
+              (payout (if (is-eq guess draw) (* (get wager game) u2) u0))
             )
             (begin
               (if (> payout u0)
@@ -195,8 +187,8 @@
                     (asserts! (>= balance payout) err-insufficient-treasury))
                   (unwrap! (transfer-from-contract payout (get player game)) err-transfer))
                 true)
-              (map-set games {id: game-id} (merge game {status: status-settled, target: (some target), draw: (some draw), outcome: (some outcome)}))
-              (ok {draw: draw, outcome: outcome, payout: payout}))))))))
+              (map-set games {id: game-id} (merge game {status: status-settled, draw: (some draw), winner: winner}))
+              (ok {draw: draw, winner: winner, payout: payout}))))))))
 
 (define-public (expire-game (game-id uint))
   (let ((game (unwrap! (map-get? games {id: game-id}) err-not-found)))

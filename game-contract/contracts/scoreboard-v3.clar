@@ -1,6 +1,6 @@
-;; title: scoreboard-v2
+;; title: scoreboard-v3
 ;; version: 1.0.0
-;; summary: Admin-managed scoreboard-v2 for arcade games.
+;; summary: Admin-managed scoreboard-v3 for arcade games.
 ;; clarity: 4
 
 ;; constants

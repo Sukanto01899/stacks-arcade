@@ -64,53 +64,68 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
-            contract-name: coin-flip-v2
+            contract-name: coin-flip-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/coin-flip-v2.clar
+            path: "contracts\\coin-flip-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: emoji-battle-v2
+            contract-name: sip009-nft-trait-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/emoji-battle-v2.clar
+            path: "contracts\\sip009-nft-trait-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: guess-the-number-v2
+            contract-name: cosmetics-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/guess-the-number-v2.clar
+            path: "contracts\\cosmetics-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: higher-lower-v2
+            contract-name: emoji-battle-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/higher-lower-v2.clar
+            path: "contracts\\emoji-battle-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: hot-potato-v2
+            contract-name: guess-the-number-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/hot-potato-v2.clar
+            path: "contracts\\guess-the-number-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: lottery-demo-v2
+            contract-name: higher-lower-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/lottery-demo-v2.clar
+            path: "contracts\\higher-lower-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: rock-paper-scissors-v2
+            contract-name: hot-potato-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/rock-paper-scissors-v2.clar
+            path: "contracts\\hot-potato-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: scoreboard-v2
+            contract-name: lottery-demo-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/scoreboard-v2.clar
+            path: "contracts\\lottery-demo-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: tic-tac-toe-v2
+            contract-name: rock-paper-scissors-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/tic-tac-toe-v2.clar
+            path: "contracts\\rock-paper-scissors-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: todo-list-v2
+            contract-name: scoreboard-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/todo-list-v2.clar
+            path: "contracts\\scoreboard-v3.clar"
+            clarity-version: 3
+        - emulated-contract-publish:
+            contract-name: tic-tac-toe-v3
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: "contracts\\tic-tac-toe-v3.clar"
+            clarity-version: 3
+        - emulated-contract-publish:
+            contract-name: todo-list-v3
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: "contracts\\todo-list-v3.clar"
+            clarity-version: 3
+        - emulated-contract-publish:
+            contract-name: tournament-v3
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: "contracts\\tournament-v3.clar"
             clarity-version: 3
       epoch: "3.0"

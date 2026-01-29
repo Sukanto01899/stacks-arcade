@@ -1,6 +1,6 @@
-;; title: cosmetics-v2
+;; title: cosmetics-v3
 ;; version: 1.0.0
-;; summary: NFT cosmetics-v2 with limited drops tied to achievements.
+;; summary: NFT cosmetics-v3 with limited drops tied to achievements.
 ;; clarity: 4
 
 ;; constants
@@ -36,7 +36,7 @@
 (define-constant err-permit-used (err u715))
 
 ;; sip-009
-(impl-trait .sip009-nft-trait-v2.sip009-nft-trait)
+(impl-trait .sip009-nft-trait-v3.sip009-nft-trait)
 (define-non-fungible-token cosmetic uint)
 
 ;; data vars

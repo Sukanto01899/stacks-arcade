@@ -1,4 +1,4 @@
-;; title: rock-paper-scissors-v2
+;; title: rock-paper-scissors-v3
 ;; version: 1.0.0
 ;; summary: Two-player RPS with commit-reveal and escrowed stakes.
 ;; clarity: 4

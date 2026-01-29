@@ -1,4 +1,4 @@
-;; title: tournament-v2
+;; title: tournament-v3
 ;; version: 1.0.0
 ;; summary: Scheduled tournaments with entry fees and pooled payouts.
 ;; clarity: 4
