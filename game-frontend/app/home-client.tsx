@@ -31,6 +31,7 @@ const CONTRACT_NAMES = {
   rockPaperScissors: process.env.NEXT_PUBLIC_ROCK_PAPER_SCISSORS_NAME ?? "rock-paper-scissors",
   hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato",
   lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo",
+  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament",
   scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard",
   ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe",
   todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list",
@@ -45,6 +46,7 @@ const CONTRACT_OVERRIDES = {
     rockPaperScissors: process.env.NEXT_PUBLIC_TESTNET_ROCK_PAPER_SCISSORS_CONTRACT ?? "",
     hotPotato: process.env.NEXT_PUBLIC_TESTNET_HOT_POTATO_CONTRACT ?? "",
     lottery: process.env.NEXT_PUBLIC_TESTNET_LOTTERY_CONTRACT ?? "",
+    tournament: process.env.NEXT_PUBLIC_TESTNET_TOURNAMENT_CONTRACT ?? "",
     scoreboard: process.env.NEXT_PUBLIC_TESTNET_SCOREBOARD_CONTRACT ?? "",
     ticTacToe: process.env.NEXT_PUBLIC_TESTNET_TIC_TAC_TOE_CONTRACT ?? "",
     todoList: process.env.NEXT_PUBLIC_TESTNET_TODO_LIST_CONTRACT ?? "",
@@ -58,6 +60,7 @@ const CONTRACT_OVERRIDES = {
     rockPaperScissors: process.env.NEXT_PUBLIC_MAINNET_ROCK_PAPER_SCISSORS_CONTRACT ?? "",
     hotPotato: process.env.NEXT_PUBLIC_MAINNET_HOT_POTATO_CONTRACT ?? "",
     lottery: process.env.NEXT_PUBLIC_MAINNET_LOTTERY_CONTRACT ?? "",
+    tournament: process.env.NEXT_PUBLIC_MAINNET_TOURNAMENT_CONTRACT ?? "",
     scoreboard: process.env.NEXT_PUBLIC_MAINNET_SCOREBOARD_CONTRACT ?? "",
     ticTacToe: process.env.NEXT_PUBLIC_MAINNET_TIC_TAC_TOE_CONTRACT ?? "",
     todoList: process.env.NEXT_PUBLIC_MAINNET_TODO_LIST_CONTRACT ?? "",
@@ -107,6 +110,7 @@ function useContracts(network: NetworkKey) {
     ),
     hotPotato: parseContractOverride(overrides.hotPotato, CONTRACT_NAMES.hotPotato, overrides.deployer),
     lottery: parseContractOverride(overrides.lottery, CONTRACT_NAMES.lottery, overrides.deployer),
+    tournament: parseContractOverride(overrides.tournament, CONTRACT_NAMES.tournament, overrides.deployer),
     scoreboard: parseContractOverride(overrides.scoreboard, CONTRACT_NAMES.scoreboard, overrides.deployer),
     ticTacToe: parseContractOverride(overrides.ticTacToe, CONTRACT_NAMES.ticTacToe, overrides.deployer),
     todoList: parseContractOverride(overrides.todoList, CONTRACT_NAMES.todoList, overrides.deployer),
@@ -311,6 +315,16 @@ export default function Home() {
   const [lotteryDuration, setLotteryDuration] = useState("144");
   const [lotteryRoundId, setLotteryRoundId] = useState("");
 
+  const [tournamentEntry, setTournamentEntry] = useState("1000000");
+  const [tournamentMaxPlayers, setTournamentMaxPlayers] = useState("8");
+  const [tournamentStartHeight, setTournamentStartHeight] = useState("");
+  const [tournamentEndHeight, setTournamentEndHeight] = useState("");
+  const [tournamentWinners, setTournamentWinners] = useState("3");
+  const [tournamentId, setTournamentId] = useState("");
+  const [tournamentWinner1, setTournamentWinner1] = useState("");
+  const [tournamentWinner2, setTournamentWinner2] = useState("");
+  const [tournamentWinner3, setTournamentWinner3] = useState("");
+
   const [scorePlayer, setScorePlayer] = useState("");
   const [scoreValue, setScoreValue] = useState("0");
   const [scoreDelta, setScoreDelta] = useState("1");
@@ -473,6 +487,7 @@ export default function Home() {
     { id: "rps", label: "Rock Paper Scissors", emoji: "✂️" },
     { id: "hot-potato", label: "Hot Potato", emoji: "🥔" },
     { id: "lottery", label: "Lottery", emoji: "🎟️" },
+    { id: "tournament", label: "Tournaments", emoji: "🥇" },
     { id: "scoreboard", label: "Scoreboard", emoji: "🏆" },
     { id: "tic-tac-toe", label: "Tic Tac Toe", emoji: "❌" },
     { id: "todo", label: "Todo List", emoji: "✅" },
@@ -1031,6 +1046,95 @@ export default function Home() {
               <ActionButton
                 label="Cancel round"
                 onClick={() => runContractCall(contracts.lottery, "cancel-round", [uintCV(toUint(lotteryRoundId))])}
+                tone="secondary"
+              />
+            </div>
+                </PageSection>
+              )}
+
+              {shouldShow("tournament") && (
+                <PageSection title="Tournaments" subtitle="Scheduled brackets or ladders with pooled payouts.">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Entry fee (microstacks)" value={tournamentEntry} onChange={setTournamentEntry} />
+              <Field label="Max players" value={tournamentMaxPlayers} onChange={setTournamentMaxPlayers} />
+              <Field label="Start height (block)" value={tournamentStartHeight} onChange={setTournamentStartHeight} />
+              <Field label="End height (block)" value={tournamentEndHeight} onChange={setTournamentEndHeight} />
+              <SelectField
+                label="Winners paid"
+                value={tournamentWinners}
+                onChange={setTournamentWinners}
+                options={[
+                  { label: "Top 1", value: "1" },
+                  { label: "Top 3", value: "3" },
+                ]}
+              />
+              <Field label="Tournament id" value={tournamentId} onChange={setTournamentId} />
+              <Field label="Winner 1 (principal)" value={tournamentWinner1} onChange={setTournamentWinner1} />
+              <Field label="Winner 2 (principal)" value={tournamentWinner2} onChange={setTournamentWinner2} />
+              <Field label="Winner 3 (principal)" value={tournamentWinner3} onChange={setTournamentWinner3} />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <ActionButton
+                label="Create tournament"
+                onClick={() =>
+                  runContractCall(contracts.tournament, "create-tournament", [
+                    uintCV(toUint(tournamentEntry)),
+                    uintCV(toUint(tournamentMaxPlayers)),
+                    uintCV(toUint(tournamentStartHeight)),
+                    uintCV(toUint(tournamentEndHeight)),
+                    uintCV(toUint(tournamentWinners)),
+                  ])
+                }
+              />
+              <ActionButton
+                label="Join tournament"
+                onClick={() =>
+                  runContractCall(contracts.tournament, "join-tournament", [uintCV(toUint(tournamentId))])
+                }
+                tone="secondary"
+              />
+              <ActionButton
+                label="Lock tournament"
+                onClick={() =>
+                  runContractCall(contracts.tournament, "lock-tournament", [uintCV(toUint(tournamentId))])
+                }
+                tone="secondary"
+              />
+              <ActionButton
+                label="Cancel tournament"
+                onClick={() =>
+                  runContractCall(contracts.tournament, "cancel-tournament", [uintCV(toUint(tournamentId))])
+                }
+                tone="secondary"
+              />
+              <ActionButton
+                label="Claim refund"
+                onClick={() =>
+                  runContractCall(contracts.tournament, "claim-refund", [uintCV(toUint(tournamentId))])
+                }
+                tone="secondary"
+              />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <ActionButton
+                label="Settle top 1"
+                onClick={() =>
+                  runContractCall(contracts.tournament, "settle-single", [
+                    uintCV(toUint(tournamentId)),
+                    standardPrincipalCV(tournamentWinner1),
+                  ])
+                }
+              />
+              <ActionButton
+                label="Settle top 3"
+                onClick={() =>
+                  runContractCall(contracts.tournament, "settle-top3", [
+                    uintCV(toUint(tournamentId)),
+                    standardPrincipalCV(tournamentWinner1),
+                    standardPrincipalCV(tournamentWinner2),
+                    standardPrincipalCV(tournamentWinner3),
+                  ])
+                }
                 tone="secondary"
               />
             </div>
