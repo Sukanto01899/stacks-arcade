@@ -1,4 +1,4 @@
-;; title: higher-lower-v3
+;; title: higher-lower-v4
 ;; version: 1.0.0
 ;; summary: Commit-reveal higher or lower guessing game.
 ;; clarity: 4
@@ -231,3 +231,4 @@
 
 (define-read-only (get-version)
   contract-version)
+

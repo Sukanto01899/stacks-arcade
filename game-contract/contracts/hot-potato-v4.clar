@@ -1,4 +1,4 @@
-;; title: hot-potato-v3
+;; title: hot-potato-v4
 ;; version: 1.0.0
 ;; summary: Timed pot game where the last holder before timeout wins the pot.
 ;; clarity: 4
@@ -175,3 +175,4 @@
 
 (define-read-only (get-version)
   contract-version)
+

@@ -1,4 +1,4 @@
-;; title: tournament-v3
+;; title: tournament-v4
 ;; version: 1.0.0
 ;; summary: Scheduled tournaments with entry fees and pooled payouts.
 ;; clarity: 4
@@ -323,3 +323,4 @@
 
 (define-read-only (get-version)
   contract-version)
+

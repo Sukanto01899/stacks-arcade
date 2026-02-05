@@ -5,16 +5,16 @@ Clarity 3 (epoch 3.0) to match Clarinet 3.8.1.
 
 ## Contracts
 
-- coin-flip-v3
-- emoji-battle-v3
-- guess-the-number-v3
-- higher-lower-v3
-- hot-potato-v3
-- lottery-demo-v3
-- rock-paper-scissors-v3
-- scoreboard-v3
-- tic-tac-toe-v3
-- todo-list-v3
+- coin-flip-v4
+- emoji-battle-v4
+- guess-the-number-v4
+- higher-lower-v4
+- hot-potato-v4
+- lottery-demo-v4
+- rock-paper-scissors-v4
+- scoreboard-v4
+- tic-tac-toe-v4
+- todo-list-v4
 
 See `game-contract/Clarinet.toml` for the full list and paths.
 
@@ -51,3 +51,4 @@ clarinet deployments generate --testnet --medium-cost
 
 Adjust `Clarinet.toml` or the settings file if you rename contracts or change deployer
 addresses.
+

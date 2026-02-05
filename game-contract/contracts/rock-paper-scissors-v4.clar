@@ -1,4 +1,4 @@
-;; title: rock-paper-scissors-v3
+;; title: rock-paper-scissors-v4
 ;; version: 1.0.0
 ;; summary: Two-player RPS with commit-reveal and escrowed stakes.
 ;; clarity: 4
@@ -249,3 +249,4 @@
 
 (define-read-only (get-version)
   contract-version)
+

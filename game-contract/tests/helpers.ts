@@ -17,3 +17,4 @@ export const mineBlocks = (count: number) => {
     simnet.mineEmptyStacksBlock();
   }
 };
+

@@ -25,18 +25,18 @@ const DEFAULT_NETWORK = (() => {
 })();
 
 const CONTRACT_NAMES = {
-  coinFlip: process.env.NEXT_PUBLIC_COIN_FLIP_NAME ?? "coin-flip-v3",
-  guessTheNumber: process.env.NEXT_PUBLIC_GUESS_THE_NUMBER_NAME ?? "guess-the-number-v3",
-  higherLower: process.env.NEXT_PUBLIC_HIGHER_LOWER_NAME ?? "higher-lower-v3",
-  emojiBattle: process.env.NEXT_PUBLIC_EMOJI_BATTLE_NAME ?? "emoji-battle-v3",
-  rockPaperScissors: process.env.NEXT_PUBLIC_ROCK_PAPER_SCISSORS_NAME ?? "rock-paper-scissors-v3",
-  hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato-v3",
-  lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo-v3",
-  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament-v3",
-  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics-v3",
-  scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard-v3",
-  ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe-v3",
-  todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list-v3",
+  coinFlip: process.env.NEXT_PUBLIC_COIN_FLIP_NAME ?? "coin-flip-v4",
+  guessTheNumber: process.env.NEXT_PUBLIC_GUESS_THE_NUMBER_NAME ?? "guess-the-number-v4",
+  higherLower: process.env.NEXT_PUBLIC_HIGHER_LOWER_NAME ?? "higher-lower-v4",
+  emojiBattle: process.env.NEXT_PUBLIC_EMOJI_BATTLE_NAME ?? "emoji-battle-v4",
+  rockPaperScissors: process.env.NEXT_PUBLIC_ROCK_PAPER_SCISSORS_NAME ?? "rock-paper-scissors-v4",
+  hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato-v4",
+  lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo-v4",
+  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament-v4",
+  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics-v4",
+  scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard-v4",
+  ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe-v4",
+  todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list-v4",
 };
 
 const CONTRACT_OVERRIDES = {
@@ -1450,4 +1450,5 @@ export default function Home() {
     </div>
   );
 }
+
 

@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 const accounts = simnet.getAccounts();
 const wallet1 = accounts.get("wallet_1")!;
 const wallet2 = accounts.get("wallet_2")!;
-const contractName = "scoreboard-v3";
+const contractName = "scoreboard-v4";
 
-describe("scoreboard-v3", () => {
+describe("scoreboard-v4", () => {
   it("allows admin to set and add scores", () => {
     simnet.callPublicFn(contractName, "init-admin", [], wallet1);
     const set = simnet.callPublicFn(
@@ -45,3 +45,4 @@ describe("scoreboard-v3", () => {
     expect(res.result).toBeErr(Cl.uint(900));
   });
 });
+
