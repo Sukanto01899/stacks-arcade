@@ -187,10 +187,10 @@ function PageSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-3xl border border-[#1f253512] bg-white/90 p-4 shadow-[0_30px_60px_-50px_rgba(16,19,31,0.6)] backdrop-blur sm:p-6">
+    <section className="rounded-[28px] border border-white/70 bg-white/85 p-5 shadow-[0_22px_45px_-28px_rgba(29,26,43,0.55)] ring-1 ring-white/50 backdrop-blur-sm transition-transform duration-300 ease-out hover:-translate-y-0.5 sm:p-6">
       <div className="mb-5 flex flex-col gap-1">
-        <h2 className="text-xl font-semibold text-[#10131f] sm:text-2xl">{title}</h2>
-        <p className="text-sm text-[#3a4156] sm:text-base">{subtitle}</p>
+        <h2 className="text-xl font-semibold text-[#1d1a2b] sm:text-2xl">{title}</h2>
+        <p className="text-sm text-[#4a4763] sm:text-base">{subtitle}</p>
       </div>
       {children}
     </section>
@@ -211,10 +211,10 @@ function Field({
   type?: string;
 }) {
   return (
-    <label className="flex flex-col gap-2 text-sm font-medium text-[#10131f]">
+    <label className="flex flex-col gap-2 text-sm font-medium text-[#1d1a2b]">
       <span>{label}</span>
       <input
-        className="h-10 rounded-2xl border border-[#1f253512] bg-white px-4 text-sm text-[#10131f] shadow-sm outline-none transition focus:border-[#ff6b4a] sm:h-11"
+        className="h-11 rounded-2xl border border-[#ffe0b8] bg-white/90 px-4 text-sm text-[#1d1a2b] shadow-sm outline-none transition duration-200 focus:border-[#ffbe3d] focus:ring-2 focus:ring-[#ffbe3d]/30 sm:h-12"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
@@ -236,10 +236,10 @@ function SelectField({
   options: { label: string; value: string }[];
 }) {
   return (
-    <label className="flex flex-col gap-2 text-sm font-medium text-[#10131f]">
+    <label className="flex flex-col gap-2 text-sm font-medium text-[#1d1a2b]">
       <span>{label}</span>
       <select
-        className="h-10 rounded-2xl border border-[#1f253512] bg-white px-4 text-sm text-[#10131f] shadow-sm outline-none transition focus:border-[#ff6b4a] sm:h-11"
+        className="h-11 rounded-2xl border border-[#ffe0b8] bg-white/90 px-4 text-sm text-[#1d1a2b] shadow-sm outline-none transition duration-200 focus:border-[#ffbe3d] focus:ring-2 focus:ring-[#ffbe3d]/30 sm:h-12"
         value={value}
         onChange={(event) => onChange(event.target.value)}
       >
@@ -263,11 +263,11 @@ function ActionButton({
   tone?: "primary" | "secondary";
 }) {
   const base =
-    "inline-flex h-10 items-center justify-center rounded-full px-4 text-sm font-semibold transition sm:h-11 sm:px-5";
+    "inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-semibold transition-all duration-200 ease-out sm:h-12 sm:px-6";
   const styles =
     tone === "primary"
-      ? "bg-[#ff6b4a] text-white shadow-[0_12px_30px_-20px_rgba(255,107,74,0.9)] hover:bg-[#ff5b35]"
-      : "border border-[#1f253512] text-[#10131f] hover:border-[#ff6b4a]";
+      ? "bg-gradient-to-r from-[#ff7a59] via-[#ff9b54] to-[#ffbe3d] text-white shadow-[0_18px_35px_-22px_rgba(255,122,89,0.9)] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0"
+      : "border border-[#ffd3a3] bg-white/70 text-[#1d1a2b] shadow-sm hover:-translate-y-0.5 hover:border-[#ffbe3d] hover:text-[#1d1a2b] active:translate-y-0";
   return (
     <button className={`${base} ${styles}`} onClick={onClick} type="button">
       {label}
@@ -523,27 +523,32 @@ export default function Home() {
   }, [networkWarning, networkName]);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#ffffff,transparent_45%),radial-gradient(circle_at_20%_60%,#ffe9dc,transparent_55%),radial-gradient(circle_at_80%_10%,#e4f7f3,transparent_40%)] px-4 pb-16 pt-8 text-[#10131f] sm:px-6 sm:pt-10 lg:px-10">
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff,transparent_42%),radial-gradient(circle_at_18%_70%,#ffe6cf,transparent_55%),radial-gradient(circle_at_82%_10%,#dff8f1,transparent_40%)] px-4 pb-16 pt-8 text-[#1d1a2b] sm:px-6 sm:pt-10 lg:px-10">
+      <div className="pointer-events-none absolute -left-16 top-10 h-44 w-44 rounded-full bg-[radial-gradient(circle,#ffbe3d,transparent_65%)] opacity-70 blur-sm animate-[floaty_8s_ease-in-out_infinite]" />
+      <div className="pointer-events-none absolute right-[-60px] top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,#7b6cff,transparent_65%)] opacity-50 blur-md animate-[floaty_10s_ease-in-out_infinite]" />
+      <div className="pointer-events-none absolute bottom-[-40px] left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,#3dd6b2,transparent_70%)] opacity-40 blur-md animate-[floaty_9s_ease-in-out_infinite]" />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 sm:gap-10">
         <div className="flex flex-col gap-3">
-          <p className="text-xs uppercase tracking-[0.4em] text-[#3a4156]">Stacks Arcade</p>
+          <p className="w-fit rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.35em] text-[#4a4763] shadow-sm">
+            Stacks Arcade
+          </p>
           <div className="flex flex-wrap items-start justify-between gap-4 sm:items-end">
             <div>
-              <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-                Pick a game. Bring the fun.
+              <h1 className="text-3xl font-semibold leading-tight tracking-tight text-[#1d1a2b] sm:text-4xl lg:text-5xl">
+                Pick a game. Let the giggles begin.
               </h1>
-              <p className="mt-2 max-w-2xl text-sm text-[#3a4156] sm:text-base">
-                A playful control room for every Stacks mini-game. Choose a title on the left,
-                connect your wallet, and launch into testnet or mainnet in a few clicks.
+              <p className="mt-2 max-w-2xl text-sm text-[#4a4763] sm:text-base">
+                A bright, bouncy control room for every Stacks mini-game. Choose a title on the left,
+                connect your wallet, then hop into testnet or mainnet in a few clicks.
               </p>
             </div>
             <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
-              <div className="flex w-full rounded-full border border-[#1f253512] bg-white p-1 text-sm sm:w-auto">
+              <div className="flex w-full rounded-full border border-white/70 bg-white/80 p-1 text-sm shadow-sm sm:w-auto">
                 <button
                   className={`flex-1 rounded-full px-4 py-2 transition sm:flex-none ${
                     networkName === "testnet"
-                      ? "bg-[#10131f] text-white"
-                      : "text-[#3a4156] hover:text-[#10131f]"
+                      ? "bg-[#1d1a2b] text-white shadow-sm"
+                      : "text-[#4a4763] hover:text-[#1d1a2b]"
                   }`}
                   onClick={() => setNetworkName("testnet")}
                   type="button"
@@ -553,8 +558,8 @@ export default function Home() {
                 <button
                   className={`flex-1 rounded-full px-4 py-2 transition sm:flex-none ${
                     networkName === "mainnet"
-                      ? "bg-[#10131f] text-white"
-                      : "text-[#3a4156] hover:text-[#10131f]"
+                      ? "bg-[#1d1a2b] text-white shadow-sm"
+                      : "text-[#4a4763] hover:text-[#1d1a2b]"
                   }`}
                   onClick={() => setNetworkName("mainnet")}
                   type="button"
@@ -564,7 +569,7 @@ export default function Home() {
               </div>
               {signedIn ? (
                 <>
-                  <span className="w-full max-w-[220px] truncate rounded-full border border-[#1f253512] bg-white px-4 py-2 text-sm font-medium sm:w-auto sm:max-w-none">
+                  <span className="w-full max-w-[220px] truncate rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm font-medium text-[#1d1a2b] shadow-sm sm:w-auto sm:max-w-none">
                     {stxAddress ?? "No address"}
                   </span>
                   <ActionButton label="Sign out" onClick={handleSignOut} tone="secondary" />
@@ -576,23 +581,23 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid gap-4 rounded-3xl border border-[#1f253512] bg-white/80 px-4 py-4 text-sm text-[#3a4156] shadow-[0_30px_60px_-50px_rgba(16,19,31,0.6)] backdrop-blur sm:px-6 md:grid-cols-3">
+        <div className="grid gap-4 rounded-[26px] border border-white/70 bg-white/75 px-4 py-4 text-sm text-[#4a4763] shadow-[0_20px_45px_-35px_rgba(29,26,43,0.45)] ring-1 ring-white/50 backdrop-blur sm:px-6 md:grid-cols-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">Network</p>
-            <p className="mt-1 font-medium text-[#10131f]">{networkName}</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">Network</p>
+            <p className="mt-1 font-medium text-[#1d1a2b]">{networkName}</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">Deployer</p>
-            <p className="mt-1 break-all font-medium text-[#10131f]">
+            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">Deployer</p>
+            <p className="mt-1 break-all font-medium text-[#1d1a2b]">
               {contracts.deployer || "Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS"}
             </p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">Status</p>
-            <p className="mt-1 font-medium text-[#10131f]">{status.message}</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">Status</p>
+            <p className="mt-1 font-medium text-[#1d1a2b]">{status.message}</p>
             {networkWarning ? (
               <div className="mt-2 flex flex-col gap-2">
-                <p className="rounded-2xl border border-[#ffb365]/30 bg-[#fff4e6] px-3 py-2 text-xs font-medium text-[#7a3c00]">
+                <p className="rounded-2xl border border-[#ffd3a3] bg-[#fff4e6] px-3 py-2 text-xs font-medium text-[#7a3c00]">
                   {networkWarning}
                 </p>
                 <div>
@@ -602,35 +607,35 @@ export default function Home() {
             ) : null}
             {lastTxId ? (
               <a
-                className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-[#ff6b4a] hover:text-[#10131f]"
+                className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-[#ff7a59] hover:text-[#1d1a2b]"
                 href={txExplorerUrl(lastTxId)}
                 target="_blank"
                 rel="noreferrer"
               >
                 View tx
-                <span className="max-w-[220px] truncate text-[#3a4156]">({lastTxId})</span>
+                <span className="max-w-[220px] truncate text-[#4a4763]">({lastTxId})</span>
               </a>
             ) : null}
           </div>
         </div>
 
-        <div className="grid gap-4 rounded-3xl border border-[#1f253512] bg-white/90 px-4 py-5 text-sm text-[#3a4156] shadow-[0_30px_60px_-50px_rgba(16,19,31,0.6)] backdrop-blur sm:px-6 md:grid-cols-3">
+        <div className="grid gap-4 rounded-[26px] border border-white/70 bg-white/85 px-4 py-5 text-sm text-[#4a4763] shadow-[0_20px_45px_-35px_rgba(29,26,43,0.45)] ring-1 ring-white/50 backdrop-blur sm:px-6 md:grid-cols-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">How to start</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">How to start</p>
             <p className="mt-2">
               Connect a wallet, pick a network, then choose a game from the sidebar. Use the
               quick actions (create, join, reveal) to play.
             </p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">How to play</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">How to play</p>
             <p className="mt-2">
               Most games are commit-reveal. Generate a secret, create a commit, then reveal it
-              to finish the round. Match the other player’s move or the random outcome.
+              to finish the round. Match the other player's move or the random outcome.
             </p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#10131f]">Need help?</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">Need help?</p>
             <p className="mt-2">
               Watch the status bar for transaction updates. The latest tx link appears after
               every broadcast so you can track confirmations.
@@ -639,11 +644,11 @@ export default function Home() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="h-fit rounded-3xl border border-[#1f253512] bg-white/90 p-4 shadow-[0_25px_50px_-45px_rgba(16,19,31,0.6)] backdrop-blur sm:p-5 lg:sticky lg:top-8">
+          <aside className="h-fit rounded-[26px] border border-white/70 bg-white/85 p-4 shadow-[0_22px_45px_-35px_rgba(29,26,43,0.45)] ring-1 ring-white/50 backdrop-blur sm:p-5 lg:sticky lg:top-8">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-[#3a4156]">Game Menu</p>
-                <p className="text-lg font-semibold text-[#10131f]">Choose your chaos</p>
+                <p className="text-xs uppercase tracking-[0.35em] text-[#4a4763]">Game Menu</p>
+                <p className="text-lg font-semibold text-[#1d1a2b]">Choose your giggle</p>
               </div>
               <span className="text-xl">??</span>
             </div>
@@ -655,24 +660,24 @@ export default function Home() {
                     key={item.id}
                     type="button"
                     onClick={() => setActiveGame(item.id)}
-                    className={`flex items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-medium transition ${
+                    className={`flex items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all duration-200 ease-out ${
                       active
-                        ? "bg-[#10131f] text-white shadow-[0_12px_24px_-18px_rgba(16,19,31,0.8)]"
-                        : "border border-[#1f253512] text-[#3a4156] hover:border-[#ff6b4a] hover:text-[#10131f]"
+                        ? "bg-[#1d1a2b] text-white shadow-[0_14px_26px_-18px_rgba(29,26,43,0.8)]"
+                        : "border border-[#ffe0b8] bg-white/70 text-[#4a4763] hover:-translate-y-0.5 hover:border-[#ffbe3d] hover:text-[#1d1a2b]"
                     }`}
                   >
                     <span className="flex items-center gap-2">
                       <span>{item.emoji}</span>
                       {item.label}
                     </span>
-                    <span className={`text-xs ${active ? "text-white/70" : "text-[#3a4156]"}`}>
+                    <span className={`text-xs ${active ? "text-white/70" : "text-[#4a4763]"}`}>
                       {active ? "Now playing" : "Pick me"}
                     </span>
                   </button>
                 );
               })}
             </nav>
-            <div className="mt-6 rounded-2xl border border-[#1f253512] bg-white px-4 py-3 text-xs text-[#3a4156]">
+            <div className="mt-6 rounded-2xl border border-[#ffe0b8] bg-white/80 px-4 py-3 text-xs text-[#4a4763]">
               Tip: Pick a game, then scroll less. We keep the fun focused.
             </div>
           </aside>
@@ -1435,7 +1440,7 @@ export default function Home() {
             </div>
 
             <PageSection title="Read-only console" subtitle="Inspect responses from read-only calls.">
-              <div className="rounded-2xl border border-[#1f253512] bg-[#10131f] px-6 py-4 text-xs text-white">
+              <div className="rounded-2xl border border-[#ffe0b8] bg-[#1d1a2b] px-6 py-4 text-xs text-white shadow-inner">
                 <pre className="whitespace-pre-wrap">{readOnlyResult || "No read-only calls yet."}</pre>
               </div>
             </PageSection>
@@ -1445,3 +1450,4 @@ export default function Home() {
     </div>
   );
 }
+
