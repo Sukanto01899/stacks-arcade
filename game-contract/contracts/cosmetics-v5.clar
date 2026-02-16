@@ -36,7 +36,7 @@
 (define-constant err-permit-used (err u715))
 
 ;; sip-009
-(impl-trait .sip009-nft-trait-v4.sip009-nft-trait)
+(impl-trait .sip009-nft-trait-v5.sip009-nft-trait)
 (define-non-fungible-token cosmetic uint)
 
 ;; data vars

@@ -5,8 +5,8 @@ authors = []
 telemetry = false
 cache_dir = './.cache'
 requirements = []
-[contracts.coin-flip-v4]
-path = 'contracts/coin-flip-v4.clar'
+[contracts.coin-flip-v5]
+path = 'contracts/coin-flip-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 

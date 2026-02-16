@@ -64,69 +64,68 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
-            contract-name: coin-flip-v4
+            contract-name: coin-flip-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\coin-flip-v4.clar"
+            path: "contracts\\coin-flip-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: sip009-nft-trait-v4
+            contract-name: sip009-nft-trait-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\sip009-nft-trait-v4.clar"
+            path: "contracts\\sip009-nft-trait-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: cosmetics-v4
+            contract-name: cosmetics-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\cosmetics-v4.clar"
+            path: "contracts\\cosmetics-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: emoji-battle-v4
+            contract-name: emoji-battle-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\emoji-battle-v4.clar"
+            path: "contracts\\emoji-battle-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: guess-the-number-v4
+            contract-name: guess-the-number-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\guess-the-number-v4.clar"
+            path: "contracts\\guess-the-number-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: higher-lower-v4
+            contract-name: higher-lower-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\higher-lower-v4.clar"
+            path: "contracts\\higher-lower-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: hot-potato-v4
+            contract-name: hot-potato-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\hot-potato-v4.clar"
+            path: "contracts\\hot-potato-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: lottery-demo-v4
+            contract-name: lottery-demo-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\lottery-demo-v4.clar"
+            path: "contracts\\lottery-demo-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: rock-paper-scissors-v4
+            contract-name: rock-paper-scissors-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\rock-paper-scissors-v4.clar"
+            path: "contracts\\rock-paper-scissors-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: scoreboard-v4
+            contract-name: scoreboard-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\scoreboard-v4.clar"
+            path: "contracts\\scoreboard-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: tic-tac-toe-v4
+            contract-name: tic-tac-toe-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\tic-tac-toe-v4.clar"
+            path: "contracts\\tic-tac-toe-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: todo-list-v4
+            contract-name: todo-list-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\todo-list-v4.clar"
+            path: "contracts\\todo-list-v5.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: tournament-v4
+            contract-name: tournament-v5
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: "contracts\\tournament-v4.clar"
+            path: "contracts\\tournament-v5.clar"
             clarity-version: 3
       epoch: "3.0"
-
