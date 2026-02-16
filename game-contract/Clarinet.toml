@@ -10,63 +10,63 @@ path = 'contracts/coin-flip-v4.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.emoji-battle-v4]
-path = 'contracts/emoji-battle-v4.clar'
+[contracts.emoji-battle-v5]
+path = 'contracts/emoji-battle-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.guess-the-number-v4]
-path = 'contracts/guess-the-number-v4.clar'
+[contracts.guess-the-number-v5]
+path = 'contracts/guess-the-number-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.higher-lower-v4]
-path = 'contracts/higher-lower-v4.clar'
+[contracts.higher-lower-v5]
+path = 'contracts/higher-lower-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.hot-potato-v4]
-path = 'contracts/hot-potato-v4.clar'
+[contracts.hot-potato-v5]
+path = 'contracts/hot-potato-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.lottery-demo-v4]
-path = 'contracts/lottery-demo-v4.clar'
+[contracts.lottery-demo-v5]
+path = 'contracts/lottery-demo-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.rock-paper-scissors-v4]
-path = 'contracts/rock-paper-scissors-v4.clar'
+[contracts.rock-paper-scissors-v5]
+path = 'contracts/rock-paper-scissors-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.tournament-v4]
-path = 'contracts/tournament-v4.clar'
+[contracts.tournament-v5]
+path = 'contracts/tournament-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.cosmetics-v4]
-path = 'contracts/cosmetics-v4.clar'
+[contracts.cosmetics-v5]
+path = 'contracts/cosmetics-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.sip009-nft-trait-v4]
-path = 'contracts/sip009-nft-trait-v4.clar'
+[contracts.sip009-nft-trait-v5]
+path = 'contracts/sip009-nft-trait-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.scoreboard-v4]
-path = 'contracts/scoreboard-v4.clar'
+[contracts.scoreboard-v5]
+path = 'contracts/scoreboard-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.tic-tac-toe-v4]
-path = 'contracts/tic-tac-toe-v4.clar'
+[contracts.tic-tac-toe-v5]
+path = 'contracts/tic-tac-toe-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.todo-list-v4]
-path = 'contracts/todo-list-v4.clar'
+[contracts.todo-list-v5]
+path = 'contracts/todo-list-v5.clar'
 clarity_version = 3
 epoch = '3.0'
 [repl.analysis]
