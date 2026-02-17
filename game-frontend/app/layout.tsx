@@ -15,8 +15,8 @@ const mono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stacks Arcade | Testnet Games",
-  description: "Multi-game Stacks arcade with testnet and mainnet toggles.",
+  title: "Stacks Arcade | Funny Games",
+  description: "Multi-game Stacks arcade play and earn.",
 };
 
 export default function RootLayout({
