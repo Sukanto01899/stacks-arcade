@@ -1288,7 +1288,7 @@ export default function Home() {
                         if (!commitSecret || commitSecret.length !== 32) {
                           setStatusMessage(
                             "error",
-                            "Secret must be 32 bytes of hex.",
+                            "Secret must be 32 bytes of hex",
                           );
                           return;
                         }
