@@ -1281,6 +1281,7 @@ export default function Home() {
                       }}
                       tone="secondary"
                     />
+
                     <ActionButton
                       label="Reveal"
                       onClick={() => {
@@ -1990,7 +1991,7 @@ export default function Home() {
 
             <PageSection
               title="Read-only console"
-              subtitle="Inspect responses from read-only calls."
+              subtitle="Inspect responses from read-only calls here. Click 'Get' buttons in the sections above to test."
             >
               <div className="rounded-2xl border border-[#ffe0b8] bg-[#1d1a2b] px-6 py-4 text-xs text-white shadow-inner">
                 <pre className="whitespace-pre-wrap">
