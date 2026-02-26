@@ -1,0 +1,102 @@
+---
+id: 0
+name: Testnet deployment
+network: testnet
+stacks-node: "https://api.testnet.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: coin-flip-8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 89850
+            path: "contracts\\coin-flip-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: sip009-nft-trait-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 3870
+            path: "contracts\\sip009-nft-trait-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: cosmetics-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 121140
+            path: "contracts\\cosmetics-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: emoji-battle-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 92150
+            path: "contracts\\emoji-battle-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: guess-the-number-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 72970
+            path: "contracts\\guess-the-number-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: higher-lower-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 78650
+            path: "contracts\\higher-lower-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: hot-potato-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 53590
+            path: "contracts\\hot-potato-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: lottery-demo-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 58690
+            path: "contracts\\lottery-demo-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: rock-paper-scissors-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 92200
+            path: "contracts\\rock-paper-scissors-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: scoreboard-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 25290
+            path: "contracts\\scoreboard-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: tic-tac-toe-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 70410
+            path: "contracts\\tic-tac-toe-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: todo-list-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 31940
+            path: "contracts\\todo-list-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: tournament-v8
+            expected-sender: ST1K2XGT5RNGT42N49BH936VDF8NXWNZJY0N432CM
+            cost: 129090
+            path: "contracts\\tournament-v8.clar"
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.0"
