@@ -15,7 +15,7 @@ const mono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stacks Arcade | Funny Games",
+  title: "Stacks Arcad Games",
   description: "Multi-game Stacks arcade play and earn",
 };
 
