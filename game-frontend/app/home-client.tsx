@@ -422,7 +422,7 @@ export default function Home() {
   const [todoCompleted, setTodoCompleted] = useState("true");
 
   const network = useMemo(() => createNetwork(networkName), [networkName]);
-  const contracts = useMemo(() => useContracts(networkName), [networkName]);
+  const contracts = useContracts(networkName);
 
   const signedIn = userSession.isUserSignedIn();
   const userData = signedIn ? userSession.loadUserData() : null;
