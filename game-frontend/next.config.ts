@@ -14,8 +14,8 @@ const webpackAliases = {
 };
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: resolve(__dirname, ".."),
   turbopack: {
-    root: __dirname,
     resolveAlias: turboAliases,
   },
   webpack: (config) => {
