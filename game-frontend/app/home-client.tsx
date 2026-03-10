@@ -34,21 +34,21 @@ const DEFAULT_NETWORK = (() => {
 })();
 
 const CONTRACT_NAMES = {
-  coinFlip: process.env.NEXT_PUBLIC_COIN_FLIP_NAME ?? "coin-flip-v9",
+  coinFlip: process.env.NEXT_PUBLIC_COIN_FLIP_NAME ?? "coin-flip-v10",
   guessTheNumber:
-    process.env.NEXT_PUBLIC_GUESS_THE_NUMBER_NAME ?? "guess-the-number-v9",
-  higherLower: process.env.NEXT_PUBLIC_HIGHER_LOWER_NAME ?? "higher-lower-v9",
-  emojiBattle: process.env.NEXT_PUBLIC_EMOJI_BATTLE_NAME ?? "emoji-battle-v9",
+    process.env.NEXT_PUBLIC_GUESS_THE_NUMBER_NAME ?? "guess-the-number-v10",
+  higherLower: process.env.NEXT_PUBLIC_HIGHER_LOWER_NAME ?? "higher-lower-v10",
+  emojiBattle: process.env.NEXT_PUBLIC_EMOJI_BATTLE_NAME ?? "emoji-battle-v10",
   rockPaperScissors:
     process.env.NEXT_PUBLIC_ROCK_PAPER_SCISSORS_NAME ??
-    "rock-paper-scissors-v9",
-  hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato-v9",
-  lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo-v9",
-  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament-v9",
-  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics-v9",
-  scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard-v9",
-  ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe-v9",
-  todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list-v9",
+    "rock-paper-scissors-v10",
+  hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato-v10",
+  lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo-v10",
+  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament-v10",
+  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics-v10",
+  scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard-v10",
+  ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe-v10",
+  todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list-v10",
 };
 
 const CONTRACT_OVERRIDES = {
@@ -381,7 +381,9 @@ function StatusBadge({
         ? "border-[#f5b5a7] bg-[#fff1ed] text-[#8a2f1d]"
         : "border-[#cbd8ff] bg-[#eef3ff] text-[#27407b]";
   return (
-    <div className={`rounded-2xl border px-4 py-3 text-sm font-medium ${styles}`}>
+    <div
+      className={`rounded-2xl border px-4 py-3 text-sm font-medium ${styles}`}
+    >
       {message}
     </div>
   );
@@ -505,10 +507,7 @@ export default function Home() {
       ? `Wallet connected, but no ${networkName} address is available. Switch your wallet network, then reconnect.`
       : null;
 
-  const setStatusMessage = (
-    tone: StatusTone,
-    message: string,
-  ) => {
+  const setStatusMessage = (tone: StatusTone, message: string) => {
     setStatus({ tone, message });
   };
 
@@ -656,7 +655,7 @@ export default function Home() {
   const shouldShow = (id: string) => activeGame === "all" || activeGame === id;
   const visibleGameCount = activeGame === "all" ? gameMenu.length - 1 : 1;
   const walletLabel = signedIn
-    ? stxAddress ?? `Connected without ${networkName} address`
+    ? (stxAddress ?? `Connected without ${networkName} address`)
     : "Wallet offline";
   const txLabel = lastTxId
     ? `${lastTxId.slice(0, 8)}...${lastTxId.slice(-6)}`
@@ -683,9 +682,9 @@ export default function Home() {
                 Playable contracts with a frontend that finally matches them.
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-6 text-white/74 sm:text-base">
-                Browse every mini-game, switch chain context, inspect transaction
-                status, and jump straight into commit-reveal flows without digging
-                through a flat operator form.
+                Browse every mini-game, switch chain context, inspect
+                transaction status, and jump straight into commit-reveal flows
+                without digging through a flat operator form.
               </p>
               <div className="mt-6 flex flex-wrap gap-3 text-sm text-white/80">
                 <span className="rounded-full border border-white/12 bg-white/10 px-4 py-2">
@@ -769,7 +768,10 @@ export default function Home() {
                     tone="secondary"
                   />
                 ) : (
-                  <ActionButton label="Connect wallet" onClick={handleConnect} />
+                  <ActionButton
+                    label="Connect wallet"
+                    onClick={handleConnect}
+                  />
                 )}
                 {lastTxId ? (
                   <a
@@ -814,7 +816,8 @@ export default function Home() {
             label="Deployer"
             value={contracts.deployer ? "Set" : "Missing"}
             detail={
-              contracts.deployer || "Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS to unlock reads and writes."
+              contracts.deployer ||
+              "Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS to unlock reads and writes."
             }
           />
         </section>
@@ -892,8 +895,8 @@ export default function Home() {
                   How to start
                 </p>
                 <p className="mt-2 leading-6">
-                  Connect a wallet, pick a network, then use the left rail to focus
-                  the exact game you want to operate.
+                  Connect a wallet, pick a network, then use the left rail to
+                  focus the exact game you want to operate.
                 </p>
               </div>
               <div>
@@ -910,8 +913,8 @@ export default function Home() {
                   Tracking
                 </p>
                 <p className="mt-2 leading-6">
-                  Status updates surface here immediately, and the latest transaction
-                  can be opened in Hiro Explorer after broadcast.
+                  Status updates surface here immediately, and the latest
+                  transaction can be opened in Hiro Explorer after broadcast.
                 </p>
               </div>
             </section>
