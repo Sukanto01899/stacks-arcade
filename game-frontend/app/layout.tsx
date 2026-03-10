@@ -15,8 +15,8 @@ const mono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stacks Arcad Games",
-  description: "Multi-game Stacks arcade play and earn",
+  title: "Stacks Arcade",
+  description: "Frontend control room for Stacks mini-games, wallet actions, and on-chain reads.",
   other: {
     "talentapp:project_verification":
       "fa36e2003afb3780c36609a910b9adb8bb27d648c83ec1ca1e39b032bb02f85f1dd5829d451e873733104da2c2039a523989e9ea221ded82a8ea197df0b0cd28",

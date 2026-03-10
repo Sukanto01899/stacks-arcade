@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   AppConfig,
   UserSession,
@@ -10,6 +10,7 @@ import {
 import { createNetwork, type StacksNetworkName } from "@stacks/network";
 import {
   AnchorMode,
+  type ClarityValue,
   PostConditionMode,
   boolCV,
   bufferCV,
@@ -33,21 +34,21 @@ const DEFAULT_NETWORK = (() => {
 })();
 
 const CONTRACT_NAMES = {
-  coinFlip: process.env.NEXT_PUBLIC_COIN_FLIP_NAME ?? "coin-flip-v5",
+  coinFlip: process.env.NEXT_PUBLIC_COIN_FLIP_NAME ?? "coin-flip-v9",
   guessTheNumber:
-    process.env.NEXT_PUBLIC_GUESS_THE_NUMBER_NAME ?? "guess-the-number-v5",
-  higherLower: process.env.NEXT_PUBLIC_HIGHER_LOWER_NAME ?? "higher-lower-v5",
-  emojiBattle: process.env.NEXT_PUBLIC_EMOJI_BATTLE_NAME ?? "emoji-battle-v5",
+    process.env.NEXT_PUBLIC_GUESS_THE_NUMBER_NAME ?? "guess-the-number-v9",
+  higherLower: process.env.NEXT_PUBLIC_HIGHER_LOWER_NAME ?? "higher-lower-v9",
+  emojiBattle: process.env.NEXT_PUBLIC_EMOJI_BATTLE_NAME ?? "emoji-battle-v9",
   rockPaperScissors:
     process.env.NEXT_PUBLIC_ROCK_PAPER_SCISSORS_NAME ??
-    "rock-paper-scissors-v5",
-  hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato-v5",
-  lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo-v5",
-  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament-v5",
-  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics-v5",
-  scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard-v5",
-  ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe-v5",
-  todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list-v5",
+    "rock-paper-scissors-v9",
+  hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato-v9",
+  lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo-v9",
+  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament-v9",
+  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics-v9",
+  scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard-v9",
+  ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe-v9",
+  todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list-v9",
 };
 
 const CONTRACT_OVERRIDES = {
@@ -246,8 +247,12 @@ function PageSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[28px] border border-white/70 bg-white/85 p-5 shadow-[0_22px_45px_-28px_rgba(29,26,43,0.55)] ring-1 ring-white/50 backdrop-blur-sm transition-transform duration-300 ease-out hover:-translate-y-0.5 sm:p-6">
+    <section className="relative overflow-hidden rounded-[30px] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,247,235,0.88))] p-5 shadow-[0_28px_60px_-34px_rgba(19,24,42,0.45)] ring-1 ring-white/55 backdrop-blur-sm transition-transform duration-300 ease-out hover:-translate-y-0.5 sm:p-6">
+      <div className="pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-full bg-[radial-gradient(circle,rgba(255,168,76,0.22),transparent_70%)]" />
       <div className="mb-5 flex flex-col gap-1">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#7a6853]">
+          Control Module
+        </p>
         <h2 className="text-xl font-semibold text-[#1d1a2b] sm:text-2xl">
           {title}
         </h2>
@@ -273,9 +278,11 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-2 text-sm font-medium text-[#1d1a2b]">
-      <span>{label}</span>
+      <span className="text-[13px] uppercase tracking-[0.14em] text-[#6a6179]">
+        {label}
+      </span>
       <input
-        className="h-11 rounded-2xl border border-[#ffe0b8] bg-white/90 px-4 text-sm text-[#1d1a2b] shadow-sm outline-none transition duration-200 focus:border-[#ffbe3d] focus:ring-2 focus:ring-[#ffbe3d]/30 sm:h-12"
+        className="h-11 rounded-2xl border border-[#f2d5af] bg-white/95 px-4 text-sm text-[#1d1a2b] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] outline-none transition duration-200 placeholder:text-[#9a93a7] focus:border-[#ff9b54] focus:ring-2 focus:ring-[#ffbe3d]/30 sm:h-12"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
@@ -298,9 +305,11 @@ function SelectField({
 }) {
   return (
     <label className="flex flex-col gap-2 text-sm font-medium text-[#1d1a2b]">
-      <span>{label}</span>
+      <span className="text-[13px] uppercase tracking-[0.14em] text-[#6a6179]">
+        {label}
+      </span>
       <select
-        className="h-11 rounded-2xl border border-[#ffe0b8] bg-white/90 px-4 text-sm text-[#1d1a2b] shadow-sm outline-none transition duration-200 focus:border-[#ffbe3d] focus:ring-2 focus:ring-[#ffbe3d]/30 sm:h-12"
+        className="h-11 rounded-2xl border border-[#f2d5af] bg-white/95 px-4 text-sm text-[#1d1a2b] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] outline-none transition duration-200 focus:border-[#ff9b54] focus:ring-2 focus:ring-[#ffbe3d]/30 sm:h-12"
         value={value}
         onChange={(event) => onChange(event.target.value)}
       >
@@ -327,12 +336,54 @@ function ActionButton({
     "inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-semibold transition-all duration-200 ease-out sm:h-12 sm:px-6";
   const styles =
     tone === "primary"
-      ? "bg-gradient-to-r from-[#ff7a59] via-[#ff9b54] to-[#ffbe3d] text-white shadow-[0_18px_35px_-22px_rgba(255,122,89,0.9)] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0"
-      : "border border-[#ffd3a3] bg-white/70 text-[#1d1a2b] shadow-sm hover:-translate-y-0.5 hover:border-[#ffbe3d] hover:text-[#1d1a2b] active:translate-y-0";
+      ? "bg-[linear-gradient(135deg,#ff7a59,#ffb84f)] text-white shadow-[0_22px_38px_-20px_rgba(255,122,89,0.72)] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0"
+      : "border border-[#f0cfa1] bg-white/75 text-[#1d1a2b] shadow-sm hover:-translate-y-0.5 hover:border-[#ffbe3d] hover:bg-white hover:text-[#1d1a2b] active:translate-y-0";
   return (
     <button className={`${base} ${styles}`} onClick={onClick} type="button">
       {label}
     </button>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  detail,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-[28px] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,245,228,0.76))] p-5 shadow-[0_20px_40px_-30px_rgba(19,24,42,0.48)] ring-1 ring-white/55">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#756654]">
+        {label}
+      </p>
+      <p className="mt-3 text-3xl font-semibold tracking-tight text-[#1d1a2b]">
+        {value}
+      </p>
+      <p className="mt-2 text-sm text-[#5b5568]">{detail}</p>
+    </div>
+  );
+}
+
+function StatusBadge({
+  tone,
+  message,
+}: {
+  tone: "info" | "error" | "success";
+  message: string;
+}) {
+  const styles =
+    tone === "success"
+      ? "border-[#9ce3c4] bg-[#ebfff5] text-[#14573d]"
+      : tone === "error"
+        ? "border-[#f5b5a7] bg-[#fff1ed] text-[#8a2f1d]"
+        : "border-[#cbd8ff] bg-[#eef3ff] text-[#27407b]";
+  return (
+    <div className={`rounded-2xl border px-4 py-3 text-sm font-medium ${styles}`}>
+      {message}
+    </div>
   );
 }
 
@@ -505,7 +556,7 @@ export default function Home() {
   const runContractCall = (
     contract: ContractMeta,
     functionName: string,
-    functionArgs: any[],
+    functionArgs: ClarityValue[],
   ) => {
     if (!assertReady(contract)) return;
     const contractAddress = resolveContractAddress(contract);
@@ -530,7 +581,7 @@ export default function Home() {
   const callReadOnly = async (
     contract: ContractMeta,
     functionName: string,
-    functionArgs: any[],
+    functionArgs: ClarityValue[],
   ) => {
     const contractAddress = resolveContractAddress(contract);
     if (!contractAddress) {
@@ -551,7 +602,7 @@ export default function Home() {
       });
       setReadOnlyResult(JSON.stringify(cvToJSON(response), null, 2));
       setStatusMessage("success", "Read-only call success.");
-    } catch (error) {
+    } catch {
       setStatusMessage("error", "Read-only call failed.");
     }
   };
@@ -580,191 +631,207 @@ export default function Home() {
   };
 
   const gameMenu = [
-    { id: "all", label: "All Games", emoji: "?" },
-    { id: "coin-flip", label: "Coin Flip", emoji: "??" },
-    { id: "guess", label: "Guess the Number", emoji: "??" },
-    { id: "higher", label: "Higher / Lower", emoji: "??" },
-    { id: "emoji", label: "Emoji Battle", emoji: "??" },
-    { id: "rps", label: "Rock Paper Scissors", emoji: "??" },
-    { id: "hot-potato", label: "Hot Potato", emoji: "??" },
-    { id: "lottery", label: "Lottery", emoji: "???" },
-    { id: "tournament", label: "Tournaments", emoji: "??" },
-    { id: "cosmetics", label: "Cosmetics", emoji: "??" },
-    { id: "scoreboard", label: "Scoreboard", emoji: "??" },
-    { id: "tic-tac-toe", label: "Tic Tac Toe", emoji: "?" },
-    { id: "todo", label: "Todo List", emoji: "?" },
+    { id: "all", label: "All Games", emoji: "00" },
+    { id: "coin-flip", label: "Coin Flip", emoji: "CF" },
+    { id: "guess", label: "Guess the Number", emoji: "GN" },
+    { id: "higher", label: "Higher / Lower", emoji: "HL" },
+    { id: "emoji", label: "Emoji Battle", emoji: "EB" },
+    { id: "rps", label: "Rock Paper Scissors", emoji: "RPS" },
+    { id: "hot-potato", label: "Hot Potato", emoji: "HP" },
+    { id: "lottery", label: "Lottery", emoji: "LOT" },
+    { id: "tournament", label: "Tournaments", emoji: "TRN" },
+    { id: "cosmetics", label: "Cosmetics", emoji: "NFT" },
+    { id: "scoreboard", label: "Scoreboard", emoji: "SB" },
+    { id: "tic-tac-toe", label: "Tic Tac Toe", emoji: "TTT" },
+    { id: "todo", label: "Todo List", emoji: "TODO" },
   ];
 
   const shouldShow = (id: string) => activeGame === "all" || activeGame === id;
-
-  useEffect(() => {
-    if (networkWarning) {
-      setStatusMessage(
-        "info",
-        `Select ${networkName} in your wallet, then reconnect.`,
-      );
-    }
-  }, [networkWarning, networkName]);
+  const visibleGameCount = activeGame === "all" ? gameMenu.length - 1 : 1;
+  const walletLabel = signedIn
+    ? stxAddress ?? `Connected without ${networkName} address`
+    : "Wallet offline";
+  const txLabel = lastTxId
+    ? `${lastTxId.slice(0, 8)}...${lastTxId.slice(-6)}`
+    : "";
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff,transparent_42%),radial-gradient(circle_at_18%_70%,#ffe6cf,transparent_55%),radial-gradient(circle_at_82%_10%,#dff8f1,transparent_40%)] px-4 pb-16 pt-8 text-[#1d1a2b] sm:px-6 sm:pt-10 lg:px-10">
-      <div className="pointer-events-none absolute -left-16 top-10 h-44 w-44 rounded-full bg-[radial-gradient(circle,#ffbe3d,transparent_65%)] opacity-70 blur-sm animate-[floaty_8s_ease-in-out_infinite]" />
-      <div className="pointer-events-none absolute right-[-60px] top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,#7b6cff,transparent_65%)] opacity-50 blur-md animate-[floaty_10s_ease-in-out_infinite]" />
-      <div className="pointer-events-none absolute bottom-[-40px] left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,#3dd6b2,transparent_70%)] opacity-40 blur-md animate-[floaty_9s_ease-in-out_infinite]" />
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#fff6e7,transparent_32%),radial-gradient(circle_at_16%_18%,rgba(255,190,61,0.24),transparent_32%),radial-gradient(circle_at_84%_12%,rgba(73,214,186,0.2),transparent_28%),linear-gradient(180deg,#fffdf9_0%,#fff4df_48%,#fff9f1_100%)] px-4 pb-16 pt-8 text-[#1d1a2b] sm:px-6 sm:pt-10 lg:px-10">
+      <div className="pointer-events-none absolute -left-12 top-10 h-44 w-44 rounded-full bg-[radial-gradient(circle,rgba(255,184,79,0.85),transparent_62%)] opacity-70 blur-md animate-[floaty_8s_ease-in-out_infinite]" />
+      <div className="pointer-events-none absolute right-[-44px] top-20 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(61,214,178,0.46),transparent_62%)] opacity-70 blur-2xl animate-[floaty_10s_ease-in-out_infinite]" />
+      <div className="pointer-events-none absolute bottom-[-70px] left-1/2 h-60 w-60 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,122,89,0.22),transparent_68%)] blur-2xl animate-[floaty_9s_ease-in-out_infinite]" />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 sm:gap-10">
-        <div className="flex flex-col gap-3">
-          <p className="w-fit rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.35em] text-[#4a4763] shadow-sm">
-            Stacks Arcade
-          </p>
-          <div className="flex flex-wrap items-start justify-between gap-4 sm:items-end">
-            <div>
-              <h1 className="text-3xl font-semibold leading-tight tracking-tight text-[#1d1a2b] sm:text-4xl lg:text-5xl">
-                Pick a game. Let the giggles begin.
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-[#4a4763] sm:text-base">
-                A bright, bouncy control room for every Stacks mini-game. Choose
-                a title on the left, connect your wallet, then hop into testnet
-                or mainnet in a few clicks.
-              </p>
-            </div>
-            <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
-              <div className="flex w-full rounded-full border border-white/70 bg-white/80 p-1 text-sm shadow-sm sm:w-auto">
-                <button
-                  className={`flex-1 rounded-full px-4 py-2 transition sm:flex-none ${
-                    networkName === "testnet"
-                      ? "bg-[#1d1a2b] text-white shadow-sm"
-                      : "text-[#4a4763] hover:text-[#1d1a2b]"
-                  }`}
-                  onClick={() => setNetworkName("testnet")}
-                  type="button"
-                >
-                  Testnet
-                </button>
-                <button
-                  className={`flex-1 rounded-full px-4 py-2 transition sm:flex-none ${
-                    networkName === "mainnet"
-                      ? "bg-[#1d1a2b] text-white shadow-sm"
-                      : "text-[#4a4763] hover:text-[#1d1a2b]"
-                  }`}
-                  onClick={() => setNetworkName("mainnet")}
-                  type="button"
-                >
-                  Mainnet
-                </button>
+        <section className="grid gap-6 lg:grid-cols-[1.45fr_0.95fr]">
+          <div className="relative overflow-hidden rounded-[36px] border border-white/60 bg-[linear-gradient(135deg,rgba(27,29,43,0.98),rgba(45,46,73,0.92)_45%,rgba(255,122,89,0.84)_140%)] px-6 py-7 text-white shadow-[0_34px_70px_-38px_rgba(19,24,42,0.75)] sm:px-8 sm:py-8">
+            <div className="pointer-events-none absolute right-[-32px] top-[-24px] h-36 w-36 rounded-full border border-white/10 bg-white/5" />
+            <div className="pointer-events-none absolute bottom-[-38px] right-16 h-28 w-28 rounded-full bg-[radial-gradient(circle,rgba(255,190,61,0.55),transparent_70%)] blur-xl" />
+            <div className="relative">
+              <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.34em] text-white/70">
+                <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1">
+                  Stacks Arcade
+                </span>
+                <span>Multi-game command deck</span>
               </div>
-              {signedIn ? (
-                <>
-                  <span className="w-full max-w-[220px] truncate rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm font-medium text-[#1d1a2b] shadow-sm sm:w-auto sm:max-w-none">
-                    {stxAddress ?? "No address"}
-                  </span>
+              <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-[0.98] tracking-tight sm:text-5xl lg:text-6xl">
+                Playable contracts with a frontend that finally matches them.
+              </h1>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-white/74 sm:text-base">
+                Browse every mini-game, switch chain context, inspect transaction
+                status, and jump straight into commit-reveal flows without digging
+                through a flat operator form.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3 text-sm text-white/80">
+                <span className="rounded-full border border-white/12 bg-white/10 px-4 py-2">
+                  {visibleGameCount} active view
+                </span>
+                <span className="rounded-full border border-white/12 bg-white/10 px-4 py-2">
+                  {gameMenu.length - 1} contracts wired
+                </span>
+                <span className="rounded-full border border-white/12 bg-white/10 px-4 py-2">
+                  {networkName} selected
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[36px] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,243,223,0.88))] p-5 shadow-[0_28px_60px_-38px_rgba(19,24,42,0.4)] ring-1 ring-white/55 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#756654]">
+                  Session
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1d1a2b]">
+                  Wallet + network
+                </h2>
+              </div>
+              <span className="rounded-full border border-[#ead2ab] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-[#6a6179]">
+                Live
+              </span>
+            </div>
+            <div className="mt-5 flex rounded-full border border-[#ead2ab] bg-white/85 p-1 text-sm shadow-sm">
+              <button
+                className={`flex-1 rounded-full px-4 py-2 transition ${
+                  networkName === "testnet"
+                    ? "bg-[#1d1a2b] text-white shadow-sm"
+                    : "text-[#4a4763] hover:text-[#1d1a2b]"
+                }`}
+                onClick={() => setNetworkName("testnet")}
+                type="button"
+              >
+                Testnet
+              </button>
+              <button
+                className={`flex-1 rounded-full px-4 py-2 transition ${
+                  networkName === "mainnet"
+                    ? "bg-[#1d1a2b] text-white shadow-sm"
+                    : "text-[#4a4763] hover:text-[#1d1a2b]"
+                }`}
+                onClick={() => setNetworkName("mainnet")}
+                type="button"
+              >
+                Mainnet
+              </button>
+            </div>
+            <div className="mt-5 space-y-3">
+              <StatusBadge tone={status.tone} message={status.message} />
+              <div className="rounded-[24px] border border-[#ead2ab] bg-white/75 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#756654]">
+                  Wallet address
+                </p>
+                <p className="mt-2 break-all font-mono text-sm text-[#1d1a2b]">
+                  {walletLabel}
+                </p>
+              </div>
+              {networkWarning ? (
+                <div className="rounded-[24px] border border-[#f2c6b3] bg-[#fff5f0] p-4 text-sm text-[#8a3d21]">
+                  <p>{networkWarning}</p>
+                  <div className="mt-3">
+                    <ActionButton
+                      label="Reconnect wallet"
+                      onClick={handleReconnect}
+                      tone="secondary"
+                    />
+                  </div>
+                </div>
+              ) : null}
+              <div className="flex flex-wrap gap-3">
+                {signedIn ? (
                   <ActionButton
                     label="Sign out"
                     onClick={handleSignOut}
                     tone="secondary"
                   />
-                </>
-              ) : (
-                <ActionButton label="Connect wallet" onClick={handleConnect} />
-              )}
+                ) : (
+                  <ActionButton label="Connect wallet" onClick={handleConnect} />
+                )}
+                {lastTxId ? (
+                  <a
+                    className="inline-flex h-11 items-center justify-center rounded-full border border-[#f0cfa1] bg-white/80 px-5 text-sm font-semibold text-[#1d1a2b] transition hover:-translate-y-0.5 hover:border-[#ffbe3d] sm:h-12 sm:px-6"
+                    href={txExplorerUrl(lastTxId)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View tx {txLabel}
+                  </a>
+                ) : null}
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="grid gap-4 rounded-[26px] border border-white/70 bg-white/75 px-4 py-4 text-sm text-[#4a4763] shadow-[0_20px_45px_-35px_rgba(29,26,43,0.45)] ring-1 ring-white/50 backdrop-blur sm:px-6 md:grid-cols-3">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">
-              Network
-            </p>
-            <p className="mt-1 font-medium text-[#1d1a2b]">{networkName}</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">
-              Deployer
-            </p>
-            <p className="mt-1 break-all font-medium text-[#1d1a2b]">
-              {contracts.deployer || "Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS"}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">
-              Status
-            </p>
-            <p className="mt-1 font-medium text-[#1d1a2b]">{status.message}</p>
-            {networkWarning ? (
-              <div className="mt-2 flex flex-col gap-2">
-                <p className="rounded-2xl border border-[#ffd3a3] bg-[#fff4e6] px-3 py-2 text-xs font-medium text-[#7a3c00]">
-                  {networkWarning}
-                </p>
-                <div>
-                  <ActionButton
-                    label="Reconnect wallet"
-                    onClick={handleReconnect}
-                    tone="secondary"
-                  />
-                </div>
-              </div>
-            ) : null}
-            {lastTxId ? (
-              <a
-                className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-[#ff7a59] hover:text-[#1d1a2b]"
-                href={txExplorerUrl(lastTxId)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                View tx
-                <span className="max-w-[220px] truncate text-[#4a4763]">
-                  ({lastTxId})
-                </span>
-              </a>
-            ) : null}
-          </div>
-        </div>
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            label="Visible Modules"
+            value={String(visibleGameCount)}
+            detail={
+              activeGame === "all"
+                ? "All game panels are expanded."
+                : `Focused on ${gameMenu.find((item) => item.id === activeGame)?.label ?? "one game"}.`
+            }
+          />
+          <StatCard
+            label="Connected Wallet"
+            value={signedIn ? "Online" : "Offline"}
+            detail={
+              signedIn
+                ? "Transactions can be sent from the connected account."
+                : "Connect a wallet to enable contract calls."
+            }
+          />
+          <StatCard
+            label="Contract Version"
+            value="v9"
+            detail="Default names now match the upgraded contract set in this repo."
+          />
+          <StatCard
+            label="Deployer"
+            value={contracts.deployer ? "Set" : "Missing"}
+            detail={
+              contracts.deployer || "Set NEXT_PUBLIC_*_DEPLOYER_ADDRESS to unlock reads and writes."
+            }
+          />
+        </section>
 
-        <div className="grid gap-4 rounded-[26px] border border-white/70 bg-white/85 px-4 py-5 text-sm text-[#4a4763] shadow-[0_20px_45px_-35px_rgba(29,26,43,0.45)] ring-1 ring-white/50 backdrop-blur sm:px-6 md:grid-cols-3">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">
-              How to start
-            </p>
-            <p className="mt-2">
-              Connect a wallet, pick a network, then choose a game from the
-              sidebar. Use the quick actions (create, join, reveal) to play.
-            </p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">
-              How to play
-            </p>
-            <p className="mt-2">
-              Most games are commit-reveal. Generate a secret, create a commit,
-              then reveal it to finish the round. Match the other player's move
-              or the random outcome.
-            </p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#1d1a2b]">
-              Need help?
-            </p>
-            <p className="mt-2">
-              Watch the status bar for transaction updates. The latest tx link
-              appears after every broadcast so you can track confirmations.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="h-fit rounded-[26px] border border-white/70 bg-white/85 p-4 shadow-[0_22px_45px_-35px_rgba(29,26,43,0.45)] ring-1 ring-white/50 backdrop-blur sm:p-5 lg:sticky lg:top-8">
-            <div className="flex items-center justify-between">
+        <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+          <aside className="h-fit rounded-[30px] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,247,235,0.86))] p-4 shadow-[0_24px_54px_-36px_rgba(19,24,42,0.38)] ring-1 ring-white/55 sm:p-5 lg:sticky lg:top-8">
+            <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-[#4a4763]">
-                  Game Menu
+                <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#756654]">
+                  Navigation
                 </p>
-                <p className="text-lg font-semibold text-[#1d1a2b]">
-                  Choose your giggle
+                <p className="mt-2 text-xl font-semibold text-[#1d1a2b]">
+                  Choose a module
                 </p>
               </div>
-              <span className="text-xl">??</span>
+              <span className="rounded-full bg-[#1d1a2b] px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white">
+                {activeGame === "all" ? "All" : "Focus"}
+              </span>
             </div>
-            <nav className="mt-4 flex flex-col gap-2">
+            <p className="mt-3 text-sm leading-6 text-[#5b5568]">
+              Filter the canvas to one game when you want a tighter workflow, or
+              keep everything open for a full operator view.
+            </p>
+            <nav className="mt-5 flex flex-col gap-2">
               {gameMenu.map((item) => {
                 const active = activeGame === item.id;
                 return (
@@ -774,29 +841,74 @@ export default function Home() {
                     onClick={() => setActiveGame(item.id)}
                     className={`flex items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all duration-200 ease-out ${
                       active
-                        ? "bg-[#1d1a2b] text-white shadow-[0_14px_26px_-18px_rgba(29,26,43,0.8)]"
-                        : "border border-[#ffe0b8] bg-white/70 text-[#4a4763] hover:-translate-y-0.5 hover:border-[#ffbe3d] hover:text-[#1d1a2b]"
+                        ? "bg-[#1d1a2b] text-white shadow-[0_18px_30px_-20px_rgba(29,26,43,0.72)]"
+                        : "border border-[#f2d5af] bg-white/75 text-[#4a4763] hover:-translate-y-0.5 hover:border-[#ffbe3d] hover:text-[#1d1a2b]"
                     }`}
                   >
-                    <span className="flex items-center gap-2">
-                      <span>{item.emoji}</span>
+                    <span className="flex items-center gap-3">
+                      <span
+                        className={`inline-flex min-w-11 justify-center rounded-full px-2 py-1 text-[11px] font-bold uppercase tracking-[0.18em] ${
+                          active
+                            ? "bg-white/12 text-white/80"
+                            : "bg-[#fff1dc] text-[#7e5a24]"
+                        }`}
+                      >
+                        {item.emoji}
+                      </span>
                       {item.label}
                     </span>
                     <span
-                      className={`text-xs ${active ? "text-white/70" : "text-[#4a4763]"}`}
+                      className={`text-xs ${active ? "text-white/70" : "text-[#7a7287]"}`}
                     >
-                      {active ? "Now playing" : "Pick me"}
+                      {active ? "Open" : "View"}
                     </span>
                   </button>
                 );
               })}
             </nav>
-            <div className="mt-6 rounded-2xl border border-[#ffe0b8] bg-white/80 px-4 py-3 text-xs text-[#4a4763]">
-              Tip: Pick a game, then scroll less. We keep the fun focused.
+            <div className="mt-6 rounded-[24px] border border-[#ead2ab] bg-[linear-gradient(180deg,#fffefb,#fff4e2)] p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#756654]">
+                Operator notes
+              </p>
+              <ul className="mt-3 space-y-2 text-sm text-[#5b5568]">
+                <li>Generate secrets before submitting commit-based games.</li>
+                <li>Read-only responses land in the console at the bottom.</li>
+                <li>Wallet network must match the selected chain.</li>
+              </ul>
             </div>
           </aside>
 
           <div className="grid gap-8">
+            <section className="grid gap-4 rounded-[30px] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,250,241,0.84))] px-5 py-5 text-sm text-[#4a4763] shadow-[0_24px_54px_-38px_rgba(19,24,42,0.36)] ring-1 ring-white/55 sm:px-6 lg:grid-cols-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#756654]">
+                  How to start
+                </p>
+                <p className="mt-2 leading-6">
+                  Connect a wallet, pick a network, then use the left rail to focus
+                  the exact game you want to operate.
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#756654]">
+                  Commit-reveal flow
+                </p>
+                <p className="mt-2 leading-6">
+                  Generate a 32-byte secret, derive the commit, create the game,
+                  and only then reveal the original secret to settle.
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#756654]">
+                  Tracking
+                </p>
+                <p className="mt-2 leading-6">
+                  Status updates surface here immediately, and the latest transaction
+                  can be opened in Hiro Explorer after broadcast.
+                </p>
+              </div>
+            </section>
+
             <div className="grid gap-8 lg:grid-cols-2">
               {shouldShow("coin-flip") && (
                 <PageSection
