@@ -1,5 +1,5 @@
 ;; title: guess-the-number-v9
-;; version: 1.0.0
+;; version: 9.0.0
 ;; summary: Commit-reveal number guessing with escrowed wager.
 ;; clarity: 4
 

@@ -1,5 +1,5 @@
 ;; title: todo-list-v9
-;; version: 1.0.0
+;; version: 9.0.0
 ;; summary: Minimal on-chain task list with low storage footprint.
 ;; clarity: 4
 

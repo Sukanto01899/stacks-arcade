@@ -1,5 +1,5 @@
 ;; title: tic-tac-toe-v9
-;; version: 1.0.0
+;; version: 9.0.0
 ;; summary: Two-player tic-tac-toe-v4 with compact bitboard storage.
 ;; clarity: 4
 

@@ -1,5 +1,5 @@
 ;; title: cosmetics-v9
-;; version: 1.0.0
+;; version: 9.0.0
 ;; summary: NFT cosmetics-v4 with limited drops tied to achievements.
 ;; clarity: 4
 
@@ -35,8 +35,7 @@
 (define-constant err-invalid-signature (err u714))
 (define-constant err-permit-used (err u715))
 
-;; sip-009
-(impl-trait .sip009-nft-trait-v8.sip009-nft-trait)
+;; sip-009-compatible interface
 (define-non-fungible-token cosmetic uint)
 
 ;; data vars
@@ -205,6 +204,29 @@
   )
 )
 
+(define-private (assert-badge-required
+    (drop-data {
+      id: uint,
+      category: uint,
+      skin: uint,
+      max-supply: uint,
+      minted: uint,
+      required-badge: uint,
+      active: bool,
+    })
+  )
+  (if (is-eq (get required-badge drop-data) badge-none)
+    (ok true)
+    (if (is-some (map-get? badges {
+        player: tx-sender,
+        badge: (get required-badge drop-data),
+      }))
+      (ok true)
+      err-badge-required
+    )
+  )
+)
+
 ;; admin
 (define-public (init-admin)
   (begin
@@ -341,16 +363,7 @@
         }))
         err-already-claimed
       )
-      (if (is-eq (get required-badge drop-data) badge-none)
-        true
-        (asserts!
-          (is-some (map-get? badges {
-            player: tx-sender,
-            badge: (get required-badge drop-data),
-          }))
-          err-badge-required
-        )
-      )
+      (unwrap! (assert-badge-required drop-data) err-badge-required)
       (map-set claims {
         drop-id: drop-id,
         player: tx-sender,
@@ -387,6 +400,7 @@
         }))
         err-permit-used
       )
+      (unwrap! (assert-badge-required drop-data) err-badge-required)
       (let ((signer (var-get claim-signer)))
         (match signer
           pubkey (begin
@@ -529,4 +543,3 @@
 (define-read-only (get-version)
   contract-version
 )
-

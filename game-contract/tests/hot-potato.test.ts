@@ -5,7 +5,7 @@ import { mineBlocks } from "./helpers";
 const accounts = simnet.getAccounts();
 const wallet1 = accounts.get("wallet_1")!;
 const wallet2 = accounts.get("wallet_2")!;
-const contractName = "hot-potato-v4";
+const contractName = "hot-potato-v9";
 
 const getGame = (id: number) => {
   const entry = simnet.getMapEntry(contractName, "games", Cl.tuple({ id: Cl.uint(id) }));
@@ -13,7 +13,7 @@ const getGame = (id: number) => {
   return (entry as SomeCV<TupleCV>).value;
 };
 
-describe("hot-potato-v4", () => {
+describe("hot-potato-v9", () => {
   it("creates, passes, and settles after timeout", () => {
     const create = simnet.callPublicFn(contractName, "create-game", [Cl.uint(1_000_000n)], wallet1);
     const gameId = Number((create.result as any).value.value);
@@ -36,4 +36,5 @@ describe("hot-potato-v4", () => {
     expect(cancel.result).toBeErr(Cl.uint(403));
   });
 });
+
 

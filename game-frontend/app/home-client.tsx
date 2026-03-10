@@ -387,11 +387,18 @@ function StatusBadge({
   );
 }
 
+type StatusTone = "info" | "error" | "success";
+
+type StatusState = {
+  tone: StatusTone;
+  message: string;
+};
+
 export default function Home() {
   const [networkName, setNetworkName] = useState<NetworkKey>(
     DEFAULT_NETWORK as NetworkKey,
   );
-  const [status, setStatus] = useState({
+  const [status, setStatus] = useState<StatusState>({
     tone: "info",
     message: "Connect a wallet to begin.",
   });
@@ -499,7 +506,7 @@ export default function Home() {
       : null;
 
   const setStatusMessage = (
-    tone: "info" | "error" | "success",
+    tone: StatusTone,
     message: string,
   ) => {
     setStatus({ tone, message });

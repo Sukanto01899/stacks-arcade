@@ -1,0 +1,86 @@
+---
+id: 1
+name: "Mainnet deployment template for the v9 contract set"
+network: mainnet
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: coin-flip-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/coin-flip-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: cosmetics-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/cosmetics-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: emoji-battle-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/emoji-battle-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: guess-the-number-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/guess-the-number-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: higher-lower-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/higher-lower-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: hot-potato-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/hot-potato-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: lottery-demo-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/lottery-demo-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: rock-paper-scissors-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/rock-paper-scissors-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: scoreboard-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/scoreboard-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: sip009-nft-trait-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/sip009-nft-trait-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: tic-tac-toe-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/tic-tac-toe-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: todo-list-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/todo-list-v9.clar"
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: tournament-v9
+            expected-sender: "<MAINNET_DEPLOYER_ADDRESS>"
+            cost: 0
+            path: "contracts/tournament-v9.clar"
+            anchor-block-only: true

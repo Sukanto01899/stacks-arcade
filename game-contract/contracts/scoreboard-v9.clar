@@ -1,5 +1,5 @@
 ;; title: scoreboard-v9
-;; version: 1.0.0
+;; version: 9.0.0
 ;; summary: Admin-managed scoreboard-v4 for arcade games.
 ;; clarity: 4
 

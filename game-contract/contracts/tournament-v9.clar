@@ -1,5 +1,5 @@
 ;; title: tournament-v9
-;; version: 1.0.0
+;; version: 9.0.0
 ;; summary: Scheduled tournaments with entry fees and pooled payouts.
 ;; clarity: 4
 

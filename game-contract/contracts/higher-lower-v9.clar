@@ -1,5 +1,5 @@
 ;; title: higher-lower-v9
-;; version: 1.0.0
+;; version: 9.0.0
 ;; summary: Commit-reveal higher or lower guessing game.
 ;; clarity: 4
 

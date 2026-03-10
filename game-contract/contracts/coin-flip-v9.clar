@@ -1,5 +1,5 @@
 ;; title: coin-flip-v9
-;; version: 1.0.0
+;; version: 9.0.0
 ;; summary: Commit-reveal coin flip with escrowed wager and treasury backing.
 ;; clarity: 4
 

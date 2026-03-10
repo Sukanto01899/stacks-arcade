@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 const accounts = simnet.getAccounts();
 const wallet1 = accounts.get("wallet_1")!;
 const wallet2 = accounts.get("wallet_2")!;
-const contractName = "todo-list-v4";
+const contractName = "todo-list-v9";
 
-describe("todo-list-v4", () => {
+describe("todo-list-v9", () => {
   it("creates, updates, and deletes a task", () => {
     const create = simnet.callPublicFn(contractName, "create-task", [], wallet1);
     const taskId = Number((create.result as any).value.value);
@@ -43,4 +43,5 @@ describe("todo-list-v4", () => {
     expect(res.result).toBeErr(Cl.uint(400));
   });
 });
+
 

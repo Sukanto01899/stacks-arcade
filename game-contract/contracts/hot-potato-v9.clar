@@ -1,5 +1,5 @@
 ;; title: hot-potato-v9
-;; version: 1.0.0
+;; version: 9.0.0
 ;; summary: Timed pot game where the last holder before timeout wins the pot.
 ;; clarity: 4
 
@@ -23,6 +23,8 @@
 (define-constant err-transfer (err u404))
 (define-constant err-too-early (err u405))
 (define-constant err-not-found (err u406))
+(define-constant err-expired (err u407))
+(define-constant err-already-holder (err u408))
 
 ;; data vars
 (define-data-var next-game-id uint u0)
@@ -121,6 +123,8 @@
     (begin
       (unwrap! (assert-not-paused) err-paused)
       (asserts! (is-eq (get status game) status-open) err-not-open)
+      (asserts! (<= stacks-block-height (get expires-at game)) err-expired)
+      (asserts! (not (is-eq tx-sender (get holder game))) err-already-holder)
       (let
         (
           (self (as-contract tx-sender))
