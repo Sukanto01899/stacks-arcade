@@ -11,6 +11,7 @@ import { createNetwork, type StacksNetworkName } from "@stacks/network";
 import {
   AnchorMode,
   type ClarityValue,
+  type PostCondition,
   PostConditionMode,
   boolCV,
   bufferCV,
@@ -93,6 +94,10 @@ type NetworkKey = "testnet" | "mainnet";
 type ContractMeta = {
   address: string;
   name: string;
+};
+
+type ContractCallOptions = {
+  postConditions?: PostCondition[] | (() => Promise<PostCondition[]>);
 };
 
 const appDetails = {
@@ -235,6 +240,24 @@ function toUint(value: string) {
   } catch {
     return BigInt(0);
   }
+}
+
+function readJsonValue(value: unknown): unknown {
+  if (value && typeof value === "object" && "value" in value) {
+    return readJsonValue((value as { value: unknown }).value);
+  }
+  return value;
+}
+
+function readTupleUint(
+  value: Record<string, unknown> | null | undefined,
+  key: string,
+) {
+  const entry = value?.[key];
+  if (!entry || typeof entry !== "object" || !("value" in entry)) {
+    throw new Error(`Missing tuple uint field: ${key}`);
+  }
+  return BigInt(String((entry as { value: unknown }).value));
 }
 
 function PageSection({
@@ -560,29 +583,46 @@ export default function Home() {
   };
 
   const runContractCall = (
+    async (
     contract: ContractMeta,
     functionName: string,
     functionArgs: ClarityValue[],
+    options?: ContractCallOptions,
   ) => {
     if (!assertReady(contract)) return;
     const contractAddress = resolveContractAddress(contract);
     setStatusMessage("info", "Transaction submitted to wallet.");
     setLastTxId(null);
-    openContractCall({
-      contractAddress,
-      contractName: contract.name,
-      functionName,
-      functionArgs,
-      network,
-      anchorMode: AnchorMode.Any,
-      postConditionMode: PostConditionMode.Allow,
-      onFinish: (data) => {
-        setLastTxId(data.txId);
-        setStatusMessage("success", "Transaction broadcasted.");
-      },
-      onCancel: () => setStatusMessage("info", "Transaction cancelled."),
-    });
-  };
+    try {
+      const postConditions =
+        typeof options?.postConditions === "function"
+          ? await options.postConditions()
+          : (options?.postConditions ?? []);
+
+      await openContractCall({
+        contractAddress,
+        contractName: contract.name,
+        functionName,
+        functionArgs,
+        network,
+        anchorMode: AnchorMode.Any,
+        postConditions,
+        postConditionMode: PostConditionMode.Allow,
+        onFinish: (data) => {
+          setLastTxId(data.txId);
+          setStatusMessage("success", "Transaction broadcasted.");
+        },
+        onCancel: () => setStatusMessage("info", "Transaction cancelled."),
+      });
+    } catch {
+      setStatusMessage("error", "Transaction setup failed.");
+    }
+  }) as (
+    contract: ContractMeta,
+    functionName: string,
+    functionArgs: ClarityValue[],
+    options?: ContractCallOptions,
+  ) => void;
 
   const callReadOnly = async (
     contract: ContractMeta,
@@ -611,6 +651,77 @@ export default function Home() {
     } catch {
       setStatusMessage("error", "Read-only call failed.");
     }
+  };
+
+  const fetchReadOnlyJson = async (
+    contract: ContractMeta,
+    functionName: string,
+    functionArgs: ClarityValue[],
+  ) => {
+    const contractAddress = resolveContractAddress(contract);
+    if (!contractAddress) {
+      throw new Error("Missing contract address.");
+    }
+    const response = await fetchCallReadOnlyFunction({
+      contractAddress,
+      contractName: contract.name,
+      functionName,
+      functionArgs,
+      senderAddress: senderAddress || contractAddress,
+      network,
+    });
+    return cvToJSON(response);
+  };
+
+  const getTupleFromOptionalReadOnly = async (
+    contract: ContractMeta,
+    functionName: string,
+    functionArgs: ClarityValue[],
+  ) => {
+    const response = await fetchReadOnlyJson(contract, functionName, functionArgs);
+    const unwrapped = readJsonValue(response);
+    if (!unwrapped || typeof unwrapped !== "object" || Array.isArray(unwrapped)) {
+      throw new Error("Expected tuple response.");
+    }
+    return unwrapped as Record<string, unknown>;
+  };
+
+  const stxTransferPostCondition = (amount: bigint) => {
+    if (!stxAddress) {
+      throw new Error("Missing wallet address.");
+    }
+    return {
+      type: "stx-postcondition" as const,
+      address: stxAddress,
+      condition: "lte" as const,
+      amount,
+    };
+  };
+
+  const getGameStakePostConditions = async (
+    contract: ContractMeta,
+    gameId: string,
+  ) => {
+    const game = await getTupleFromOptionalReadOnly(contract, "get-game", [
+      uintCV(toUint(gameId)),
+    ]);
+    return [stxTransferPostCondition(readTupleUint(game, "stake"))];
+  };
+
+  const getLotteryTicketPostConditions = async (roundId: string) => {
+    const round = await getTupleFromOptionalReadOnly(contracts.lottery, "get-round", [
+      uintCV(toUint(roundId)),
+    ]);
+    return [stxTransferPostCondition(readTupleUint(round, "ticket-price"))];
+  };
+
+  const getTournamentEntryPostConditions = async (tournamentIdValue: string) => {
+    const tournament = await getTupleFromOptionalReadOnly(
+      contracts.tournament,
+      "get-tournament",
+      [uintCV(toUint(tournamentIdValue))],
+    );
+    return [stxTransferPostCondition(readTupleUint(tournament, "entry-fee"))];
   };
 
   const commitFrom = async (
@@ -976,7 +1087,11 @@ export default function Home() {
                         runContractCall(contracts.coinFlip, "create-game", [
                           uintCV(toUint(coinWager)),
                           commitArg,
-                        ]);
+                        ], {
+                          postConditions: [
+                            stxTransferPostCondition(toUint(coinWager)),
+                          ],
+                        });
                       }}
                     />
                   </div>
@@ -1070,6 +1185,11 @@ export default function Home() {
                           contracts.guessTheNumber,
                           "create-game",
                           [uintCV(toUint(guessWager)), commitArg],
+                          {
+                            postConditions: [
+                              stxTransferPostCondition(toUint(guessWager)),
+                            ],
+                          },
                         );
                       }}
                     />
@@ -1174,7 +1294,11 @@ export default function Home() {
                         runContractCall(contracts.higherLower, "create-game", [
                           uintCV(toUint(higherWager)),
                           commitArg,
-                        ]);
+                        ], {
+                          postConditions: [
+                            stxTransferPostCondition(toUint(higherWager)),
+                          ],
+                        });
                       }}
                     />
                   </div>
@@ -1273,7 +1397,11 @@ export default function Home() {
                         runContractCall(contracts.emojiBattle, "create-game", [
                           uintCV(toUint(emojiStake)),
                           commitArg,
-                        ]);
+                        ], {
+                          postConditions: [
+                            stxTransferPostCondition(toUint(emojiStake)),
+                          ],
+                        });
                       }}
                     />
                   </div>
@@ -1291,7 +1419,13 @@ export default function Home() {
                         runContractCall(contracts.emojiBattle, "join-game", [
                           uintCV(toUint(emojiGameId)),
                           commitArg,
-                        ]);
+                        ], {
+                          postConditions: () =>
+                            getGameStakePostConditions(
+                              contracts.emojiBattle,
+                              emojiGameId,
+                            ),
+                        });
                       }}
                       tone="secondary"
                     />
@@ -1380,6 +1514,11 @@ export default function Home() {
                           contracts.rockPaperScissors,
                           "create-game",
                           [uintCV(toUint(rpsStake)), commitArg],
+                          {
+                            postConditions: [
+                              stxTransferPostCondition(toUint(rpsStake)),
+                            ],
+                          },
                         );
                       }}
                     />
@@ -1399,6 +1538,13 @@ export default function Home() {
                           contracts.rockPaperScissors,
                           "join-game",
                           [uintCV(toUint(rpsGameId)), commitArg],
+                          {
+                            postConditions: () =>
+                              getGameStakePostConditions(
+                                contracts.rockPaperScissors,
+                                rpsGameId,
+                              ),
+                          },
                         );
                       }}
                       tone="secondary"
@@ -1460,7 +1606,11 @@ export default function Home() {
                       onClick={() =>
                         runContractCall(contracts.hotPotato, "create-game", [
                           uintCV(toUint(hotStake)),
-                        ])
+                        ], {
+                          postConditions: [
+                            stxTransferPostCondition(toUint(hotStake)),
+                          ],
+                        })
                       }
                     />
                     <ActionButton
@@ -1468,7 +1618,13 @@ export default function Home() {
                       onClick={() =>
                         runContractCall(contracts.hotPotato, "take-potato", [
                           uintCV(toUint(hotGameId)),
-                        ])
+                        ], {
+                          postConditions: () =>
+                            getGameStakePostConditions(
+                              contracts.hotPotato,
+                              hotGameId,
+                            ),
+                        })
                       }
                       tone="secondary"
                     />
@@ -1530,7 +1686,10 @@ export default function Home() {
                       onClick={() =>
                         runContractCall(contracts.lottery, "buy-ticket", [
                           uintCV(toUint(lotteryRoundId)),
-                        ])
+                        ], {
+                          postConditions: () =>
+                            getLotteryTicketPostConditions(lotteryRoundId),
+                        })
                       }
                       tone="secondary"
                     />
@@ -1635,6 +1794,10 @@ export default function Home() {
                           contracts.tournament,
                           "join-tournament",
                           [uintCV(toUint(tournamentId))],
+                          {
+                            postConditions: () =>
+                              getTournamentEntryPostConditions(tournamentId),
+                          },
                         )
                       }
                       tone="secondary"
@@ -1893,7 +2056,17 @@ export default function Home() {
                           uintCV(toUint(cosmeticsTokenId)),
                           standardPrincipalCV(stxAddress),
                           standardPrincipalCV(cosmeticsTransferTo),
-                        ]);
+                        ], {
+                          postConditions: [
+                            {
+                              type: "nft-postcondition",
+                              address: stxAddress,
+                              condition: "sent",
+                              asset: `${resolveContractAddress(contracts.cosmetics)}.${contracts.cosmetics.name}::cosmetic`,
+                              assetId: uintCV(toUint(cosmeticsTokenId)),
+                            },
+                          ],
+                        });
                       }}
                       tone="secondary"
                     />
