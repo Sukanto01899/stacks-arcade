@@ -21,36 +21,10 @@ import {
   standardPrincipalCV,
   uintCV,
 } from "@stacks/transactions";
+import { CONTRACT_NAMES, DEFAULT_NETWORK } from "@/lib/config";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 const userSession = new UserSession({ appConfig });
-
-const DEFAULT_NETWORK = (() => {
-  const value = (
-    process.env.NEXT_PUBLIC_DEFAULT_NETWORK ?? "testnet"
-  ).toLowerCase();
-  if (value === "mainnet" || value === "testnet")
-    return value as StacksNetworkName;
-  return "testnet";
-})();
-
-const CONTRACT_NAMES = {
-  coinFlip: process.env.NEXT_PUBLIC_COIN_FLIP_NAME ?? "coin-flip-v10",
-  guessTheNumber:
-    process.env.NEXT_PUBLIC_GUESS_THE_NUMBER_NAME ?? "guess-the-number-v10",
-  higherLower: process.env.NEXT_PUBLIC_HIGHER_LOWER_NAME ?? "higher-lower-v10",
-  emojiBattle: process.env.NEXT_PUBLIC_EMOJI_BATTLE_NAME ?? "emoji-battle-v10",
-  rockPaperScissors:
-    process.env.NEXT_PUBLIC_ROCK_PAPER_SCISSORS_NAME ??
-    "rock-paper-scissors-v10",
-  hotPotato: process.env.NEXT_PUBLIC_HOT_POTATO_NAME ?? "hot-potato-v10",
-  lottery: process.env.NEXT_PUBLIC_LOTTERY_NAME ?? "lottery-demo-v10",
-  tournament: process.env.NEXT_PUBLIC_TOURNAMENT_NAME ?? "tournament-v10",
-  cosmetics: process.env.NEXT_PUBLIC_COSMETICS_NAME ?? "cosmetics-v10",
-  scoreboard: process.env.NEXT_PUBLIC_SCOREBOARD_NAME ?? "scoreboard-v10",
-  ticTacToe: process.env.NEXT_PUBLIC_TIC_TAC_TOE_NAME ?? "tic-tac-toe-v10",
-  todoList: process.env.NEXT_PUBLIC_TODO_LIST_NAME ?? "todo-list-v10",
-};
 
 const CONTRACT_OVERRIDES = {
   testnet: {
@@ -582,8 +556,7 @@ export default function Home() {
     return true;
   };
 
-  const runContractCall = (
-    async (
+  const runContractCall = (async (
     contract: ContractMeta,
     functionName: string,
     functionArgs: ClarityValue[],
@@ -678,9 +651,17 @@ export default function Home() {
     functionName: string,
     functionArgs: ClarityValue[],
   ) => {
-    const response = await fetchReadOnlyJson(contract, functionName, functionArgs);
+    const response = await fetchReadOnlyJson(
+      contract,
+      functionName,
+      functionArgs,
+    );
     const unwrapped = readJsonValue(response);
-    if (!unwrapped || typeof unwrapped !== "object" || Array.isArray(unwrapped)) {
+    if (
+      !unwrapped ||
+      typeof unwrapped !== "object" ||
+      Array.isArray(unwrapped)
+    ) {
       throw new Error("Expected tuple response.");
     }
     return unwrapped as Record<string, unknown>;
@@ -709,13 +690,17 @@ export default function Home() {
   };
 
   const getLotteryTicketPostConditions = async (roundId: string) => {
-    const round = await getTupleFromOptionalReadOnly(contracts.lottery, "get-round", [
-      uintCV(toUint(roundId)),
-    ]);
+    const round = await getTupleFromOptionalReadOnly(
+      contracts.lottery,
+      "get-round",
+      [uintCV(toUint(roundId))],
+    );
     return [stxTransferPostCondition(readTupleUint(round, "ticket-price"))];
   };
 
-  const getTournamentEntryPostConditions = async (tournamentIdValue: string) => {
+  const getTournamentEntryPostConditions = async (
+    tournamentIdValue: string,
+  ) => {
     const tournament = await getTupleFromOptionalReadOnly(
       contracts.tournament,
       "get-tournament",
@@ -1084,14 +1069,16 @@ export default function Home() {
                       onClick={() => {
                         const commitArg = commitArgFromHex(coinCommit);
                         if (!commitArg) return;
-                        runContractCall(contracts.coinFlip, "create-game", [
-                          uintCV(toUint(coinWager)),
-                          commitArg,
-                        ], {
-                          postConditions: [
-                            stxTransferPostCondition(toUint(coinWager)),
-                          ],
-                        });
+                        runContractCall(
+                          contracts.coinFlip,
+                          "create-game",
+                          [uintCV(toUint(coinWager)), commitArg],
+                          {
+                            postConditions: [
+                              stxTransferPostCondition(toUint(coinWager)),
+                            ],
+                          },
+                        );
                       }}
                     />
                   </div>
@@ -1291,14 +1278,16 @@ export default function Home() {
                       onClick={() => {
                         const commitArg = commitArgFromHex(higherCommit);
                         if (!commitArg) return;
-                        runContractCall(contracts.higherLower, "create-game", [
-                          uintCV(toUint(higherWager)),
-                          commitArg,
-                        ], {
-                          postConditions: [
-                            stxTransferPostCondition(toUint(higherWager)),
-                          ],
-                        });
+                        runContractCall(
+                          contracts.higherLower,
+                          "create-game",
+                          [uintCV(toUint(higherWager)), commitArg],
+                          {
+                            postConditions: [
+                              stxTransferPostCondition(toUint(higherWager)),
+                            ],
+                          },
+                        );
                       }}
                     />
                   </div>
@@ -1394,14 +1383,16 @@ export default function Home() {
                       onClick={() => {
                         const commitArg = commitArgFromHex(emojiCommit);
                         if (!commitArg) return;
-                        runContractCall(contracts.emojiBattle, "create-game", [
-                          uintCV(toUint(emojiStake)),
-                          commitArg,
-                        ], {
-                          postConditions: [
-                            stxTransferPostCondition(toUint(emojiStake)),
-                          ],
-                        });
+                        runContractCall(
+                          contracts.emojiBattle,
+                          "create-game",
+                          [uintCV(toUint(emojiStake)), commitArg],
+                          {
+                            postConditions: [
+                              stxTransferPostCondition(toUint(emojiStake)),
+                            ],
+                          },
+                        );
                       }}
                     />
                   </div>
@@ -1416,16 +1407,18 @@ export default function Home() {
                       onClick={() => {
                         const commitArg = commitArgFromHex(emojiCommit);
                         if (!commitArg) return;
-                        runContractCall(contracts.emojiBattle, "join-game", [
-                          uintCV(toUint(emojiGameId)),
-                          commitArg,
-                        ], {
-                          postConditions: () =>
-                            getGameStakePostConditions(
-                              contracts.emojiBattle,
-                              emojiGameId,
-                            ),
-                        });
+                        runContractCall(
+                          contracts.emojiBattle,
+                          "join-game",
+                          [uintCV(toUint(emojiGameId)), commitArg],
+                          {
+                            postConditions: () =>
+                              getGameStakePostConditions(
+                                contracts.emojiBattle,
+                                emojiGameId,
+                              ),
+                          },
+                        );
                       }}
                       tone="secondary"
                     />
@@ -1604,27 +1597,33 @@ export default function Home() {
                     <ActionButton
                       label="Create game"
                       onClick={() =>
-                        runContractCall(contracts.hotPotato, "create-game", [
-                          uintCV(toUint(hotStake)),
-                        ], {
-                          postConditions: [
-                            stxTransferPostCondition(toUint(hotStake)),
-                          ],
-                        })
+                        runContractCall(
+                          contracts.hotPotato,
+                          "create-game",
+                          [uintCV(toUint(hotStake))],
+                          {
+                            postConditions: [
+                              stxTransferPostCondition(toUint(hotStake)),
+                            ],
+                          },
+                        )
                       }
                     />
                     <ActionButton
                       label="Take potato"
                       onClick={() =>
-                        runContractCall(contracts.hotPotato, "take-potato", [
-                          uintCV(toUint(hotGameId)),
-                        ], {
-                          postConditions: () =>
-                            getGameStakePostConditions(
-                              contracts.hotPotato,
-                              hotGameId,
-                            ),
-                        })
+                        runContractCall(
+                          contracts.hotPotato,
+                          "take-potato",
+                          [uintCV(toUint(hotGameId))],
+                          {
+                            postConditions: () =>
+                              getGameStakePostConditions(
+                                contracts.hotPotato,
+                                hotGameId,
+                              ),
+                          },
+                        )
                       }
                       tone="secondary"
                     />
@@ -1684,12 +1683,15 @@ export default function Home() {
                     <ActionButton
                       label="Buy ticket"
                       onClick={() =>
-                        runContractCall(contracts.lottery, "buy-ticket", [
-                          uintCV(toUint(lotteryRoundId)),
-                        ], {
-                          postConditions: () =>
-                            getLotteryTicketPostConditions(lotteryRoundId),
-                        })
+                        runContractCall(
+                          contracts.lottery,
+                          "buy-ticket",
+                          [uintCV(toUint(lotteryRoundId))],
+                          {
+                            postConditions: () =>
+                              getLotteryTicketPostConditions(lotteryRoundId),
+                          },
+                        )
                       }
                       tone="secondary"
                     />
@@ -2052,21 +2054,26 @@ export default function Home() {
                           );
                           return;
                         }
-                        runContractCall(contracts.cosmetics, "transfer", [
-                          uintCV(toUint(cosmeticsTokenId)),
-                          standardPrincipalCV(stxAddress),
-                          standardPrincipalCV(cosmeticsTransferTo),
-                        ], {
-                          postConditions: [
-                            {
-                              type: "nft-postcondition",
-                              address: stxAddress,
-                              condition: "sent",
-                              asset: `${resolveContractAddress(contracts.cosmetics)}.${contracts.cosmetics.name}::cosmetic`,
-                              assetId: uintCV(toUint(cosmeticsTokenId)),
-                            },
+                        runContractCall(
+                          contracts.cosmetics,
+                          "transfer",
+                          [
+                            uintCV(toUint(cosmeticsTokenId)),
+                            standardPrincipalCV(stxAddress),
+                            standardPrincipalCV(cosmeticsTransferTo),
                           ],
-                        });
+                          {
+                            postConditions: [
+                              {
+                                type: "nft-postcondition",
+                                address: stxAddress,
+                                condition: "sent",
+                                asset: `${resolveContractAddress(contracts.cosmetics)}.${contracts.cosmetics.name}::cosmetic`,
+                                assetId: uintCV(toUint(cosmeticsTokenId)),
+                              },
+                            ],
+                          },
+                        );
                       }}
                       tone="secondary"
                     />
